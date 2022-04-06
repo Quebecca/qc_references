@@ -1,0 +1,6 @@
+mod{
+  qcReferences  {
+    alowedTables  = pages, tt_content
+    itemsPerPage = 100
+  }
+}

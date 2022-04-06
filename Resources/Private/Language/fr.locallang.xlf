@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en"  datatype="plaintext" original="EXT:qc_references/Resources/Private/Language/locallang" date="2021-09-28T18:58:22Z" product-name="qc_references">
+		<header/>
+		<body>
+            <trans-unit id="mod_qcPageReferences" >
+                <source>Page References</source>
+                <target>Les références à la page</target>
+            </trans-unit>
+            <trans-unit id="defaultTitle">
+                <source>Qc page references Module</source>
+                <target>Module Qc pour les références à une page</target>
+            </trans-unit>
+            <trans-unit id="pageUid">
+                <source>Page uid</source>
+                <target>Uid de page</target>
+            </trans-unit>
+            <trans-unit id="referenceTo">
+                <source>References to </source>
+                <target>Références à </target>
+            </trans-unit>
+            <trans-unit id="noReference" >
+                <source>No reference found</source>
+                <target>Aucune référence trouvée</target>
+            </trans-unit>
+            <trans-unit id="hideDisableAndDeletedElements" >
+                <source>Show deleted or hidden items</source>
+                <target>Afficher les éléments effacés ou masqués</target>
+            </trans-unit>
+		</body>
+	</file>
+</xliff>

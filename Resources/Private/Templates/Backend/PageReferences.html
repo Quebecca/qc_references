@@ -1,0 +1,69 @@
+{namespace be=TYPO3\CMS\Backend\ViewHelpers}
+{namespace core=TYPO3\CMS\Core\ViewHelpers}
+<f:layout name="TabContent" />
+<f:section name="Main">
+        <f:if condition="{references}">
+            <f:then>
+
+                <div class="table-fit">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th ><f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:show_item.php.title" /></th>
+                            <th><f:translate key="LLL:EXT:qc_references/Resources/Private/Language/locallang.xlf:pageUid"/></th>
+                            <th>Groupe BE</th>
+                            <th><f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:show_item.php.table" /></th>
+                            <th>Slug</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <f:for each="{references}" as="line">
+
+                            <tr>
+                                <f:if condition="{line.record}">
+                                    <f:then>
+                                        <td>
+                                            <div class="text-hover">
+                                                <span title="{line.record.uid}">{line.icon -> f:format.raw()}</span> {line.recordTitle}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <f:if condition="{line.tablename} != 'pages'">
+                                                <f:then>{line.pid}</f:then>
+                                                <f:else>{line.record.uid}</f:else>
+                                            </f:if>
+                                        </td>
+                                        <td>{line.groupName}</td>
+                                        <td>{line.title}</td>
+                                    </f:then>
+                                    <f:else>
+                                        <td class="col-icon"></td>
+                                        <td class="col-title"><f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:show_item.php.missing_record" /> (uid={line.row.recuid}</td>
+                                        <td>{line.row.title}</td>
+                                    </f:else>
+                                </f:if>
+                                <td>
+                                    <div class="text-hover">
+                                        <a href="#" onclick="{line.pageLink}">{line.path}</a>
+                                    </div>
+                                </td>
+
+                            </tr>
+                        </f:for>
+                        </tbody>
+                    </table>
+                </div>
+            </f:then>
+            <f:else>
+                <div class="alert no-result-alert"  role="alert">
+                    <span>
+                         <f:translate key="LLL:EXT:qc_references/Resources/Private/Language/locallang.xlf:noReference" />
+                    </span>
+                </div>
+            </f:else>
+        </f:if>
+
+    <f:render partial="Pagination" arguments="{pagination: pagination, currentPage: currentPage, showHiddenOrDeletedElements : showHiddenOrDeletedElements}"/>
+</f:section>
+

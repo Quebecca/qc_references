@@ -1,0 +1,22 @@
+.text-hover {
+  display: block;
+  max-width: 300px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  height: 110%;
+  transition: max-height 1s;
+
+  &:hover {
+    white-space: normal;
+    height: 100%;
+  }
+
+}
+
+.no-result-alert{
+  margin-left : 2rem;
+  margin-right : 2rem;
+  margin-top : 10rem;
+  text-align : center;
+  background-color : #f2f1f1;
+}
