@@ -144,7 +144,7 @@ class ReferenceRepository
         else {
             if( $row['tablename'] == 'pages'){
                 $line['groupName'] = $this->getBEGroup($row['recuid'], $this->pagesQueryBuilder);
-                $line['pageLink'] = htmlspecialchars(BackendUtility::viewOnClick($row['recuid'], '', BackendUtility::BEgetRootLine($row['recuid'])));
+                $line['pageLink'] = htmlspecialchars(BackendUtility::viewOnClick($record['uid'], '', BackendUtility::BEgetRootLine($record['uid'])));
             }
             else{
                 $line['pid'] = '-';
