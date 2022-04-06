@@ -24,6 +24,12 @@
             <trans-unit id="referencesFound" >
                 <source>references found</source>
             </trans-unit>
+            <trans-unit id="hidden" >
+                <source> - hidden</source>
+            </trans-unit>
+            <trans-unit id="deleted" >
+                <source> - deleted</source>
+            </trans-unit>
 		</body>
 	</file>
 </xliff>

@@ -23,7 +23,18 @@
                                     <f:then>
                                         <td>
                                             <div class="text-hover">
-                                                <span title="{line.record.uid}">{line.icon -> f:format.raw()}</span> {line.recordTitle}
+                                                <f:if condition="{line.deleted}">
+                                                    <f:then>
+                                                        <f:image
+                                                                src="EXT:qc_references/Resources/Public/Icons/install-check-extables.svg"
+                                                                width="18" title="{line.elementDescription}"/>
+                                                    </f:then>
+                                                    <f:else>
+                                                          <span title="{line.elementDescription}">
+                                                                    {line.icon -> f:format.raw()}  </span>
+                                                    </f:else>
+                                                </f:if>
+                                                {line.recordTitle}
                                             </div>
                                         </td>
                                         <td>

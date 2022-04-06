@@ -1,5 +1,15 @@
 <?php
-
+declare(strict_types=1);
+/***
+ *
+ * This file is part of Qc References project.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ *  (c) 2022 <techno@quebec.ca>
+ *
+ ***/
 namespace Qc\QcReferences;
 
 
@@ -38,22 +48,44 @@ class ReferenceRepository
 
     const DEFAULT_ITEMS_PER_PAGE = 20;
 
+    /**
+     * @var int
+     */
     protected int $numberOfReferences = 0;
+
+
+    const LANG_FILE = 'LLL:EXT:qc_references/Resources/Private/Language/locallang.xlf:';
+
+    /**
+     * @var QueryBuilder
+     */
+    protected QueryBuilder $pagesQueryBuilder;
+    /**
+     * @var QueryBuilder
+     */
+    protected QueryBuilder $ttContentQueryBuilder;
+    /**
+     * @var QueryBuilder
+     */
+    protected QueryBuilder $refIndexQueryBuilder;
 
 
     public function __construct(){
         $this->backendUserGroupRepository = $backendUserGroupRepository ?? GeneralUtility::makeInstance(BackendUserGroupRepository::class);
         $this->iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+        $this->refIndexQueryBuilder = $this->getQueryBuilderForTable('sys_refindex');
+        $this->ttContentQueryBuilder = $this->getQueryBuilderForTable('tt_content');
+        $this->pagesQueryBuilder = $this->getQueryBuilderForTable('pages');
     }
 
     /**
-     * Make reference display
+     * Return the references records
      *
      * @param int|File $ref Filename or uid
      * @return array
      * @throws Exception
      */
-    public function getReferences($ref,$showHiddenOrDeletedElement, $paginationPage): array
+    public function getReferences($ref, $showHiddenOrDeletedElement, $paginationPage): array
     {
         $this->modTS = BackendUtility::getPagesTSconfig($ref)['mod.']['qcReferences.'];
         $tsTables = explode(",",$this->modTS['allowedTables']);
@@ -83,76 +115,69 @@ class ReferenceRepository
     }
 
     /**
+     * This function is used to map and process returned data from the DB
      * @param $row
      * @return array
      */
     public function mapRowToLine($row): array
     {
-        // Generate query builder for used tables
-        $ttContentQueryBuilder = $this->getQueryBuilderForTable('tt_content');
-        $pagesQueryBuilder = $this->getQueryBuilderForTable('pages');
         $lang = $this->getLanguageService();
-        $record = BackendUtility::getRecord($row['tablename'], $row['recuid']);
-        if ($record) {
-            $parentRecord = BackendUtility::getRecord('pages', $record['pid']);
-            $parentRecordTitle = is_array($parentRecord)
-                ? BackendUtility::getRecordTitle('pages', $parentRecord)
-                : '';
+        $record = BackendUtility::getRecord($row['tablename'], $row['recuid'],'*', '', false);
 
-            $line['icon'] = $this->iconFactory->getIconForRecord($row['tablename'], $record, Icon::SIZE_SMALL)->render();
-            $line['row'] = $row;
-            $line['record'] = $record;
-            $line['recordTitle'] = BackendUtility::getRecordTitle($row['tablename'], $record, false, true);
-            $line['parentRecordTitle'] = $parentRecordTitle;
-            $line['title'] = $lang->sL($GLOBALS['TCA'][$row['tablename']]['ctrl']['title']);
-            $line['tablename'] = $row['tablename'];
+        $line['deleted'] = $record['deleted'];
+        $line['elementDescription'] = 'uid : ' . $record['uid'];
+        $status = $record['deleted'] ? 'deleted' :  ($record['hidden'] ? 'hidden' : '');
+        $line['elementDescription'] .= $lang->sL(self::LANG_FILE.$status);
 
-            if( $row['tablename'] == 'tt_content'){
-                $line['pid'] = $this->getPid($row['recuid'], $row['tablename'], $ttContentQueryBuilder)['pid'];
-                $line['groupName'] = $this->getBEGroup($line['pid'],$pagesQueryBuilder);
-                $line['pageLink'] = htmlspecialchars(BackendUtility::viewOnClick($record['pid'], '', BackendUtility::BEgetRootLine($record['pid'])));
-            }
-            else {
-                if( $row['tablename'] == 'pages'){
-                    $line['groupName'] = $this->getBEGroup($row['recuid'], $pagesQueryBuilder);
-                    $line['pageLink'] = htmlspecialchars(BackendUtility::viewOnClick($row['recuid'], '', BackendUtility::BEgetRootLine($row['recuid'])));
-                }
-                else{
-                    $line['pid'] = '-';
-                }
-            }
+        $line['icon'] = $this->iconFactory->getIconForRecord($row['tablename'], $record, Icon::SIZE_SMALL)->render();
+        $line['row'] = $row;
+        $line['record'] = $record;
+        $line['recordTitle'] = BackendUtility::getRecordTitle($row['tablename'], $record, false, true);
+        $line['title'] = $lang->sL($GLOBALS['TCA'][$row['tablename']]['ctrl']['title']);
+        $line['tablename'] = $row['tablename'];
 
-            $line['path'] = BackendUtility::getRecordPath($record['pid'], '', 0, 0);
-        } else {
-            $line['row'] = $row;
-            $line['title'] = $lang->sL($GLOBALS['TCA'][$row['tablename']]['ctrl']['title']) ?: $row['tablename'];
+        if( $row['tablename'] == 'tt_content'){
+            $line['pid'] = $this->getPid($row['recuid'], $row['tablename'], $this->ttContentQueryBuilder)['pid'];
+            $line['groupName'] = $this->getBEGroup($line['pid'],$this->pagesQueryBuilder);
+            $line['pageLink'] = htmlspecialchars(BackendUtility::viewOnClick($record['pid'], '', BackendUtility::BEgetRootLine($record['pid'])));
         }
+        else {
+            if( $row['tablename'] == 'pages'){
+                $line['groupName'] = $this->getBEGroup($row['recuid'], $this->pagesQueryBuilder);
+                $line['pageLink'] = htmlspecialchars(BackendUtility::viewOnClick($row['recuid'], '', BackendUtility::BEgetRootLine($row['recuid'])));
+            }
+            else{
+                $line['pid'] = '-';
+            }
+        }
+        $line['path'] = BackendUtility::getRecordPath($record['pid'], '', 0, 0);
+
         return $line;
     }
 
     /**
+     * This function is used to get sys_refindex records from DB
      * @return array
      * @throws Exception
      */
     public function getReferencesFromDB($selectTable, $selectUid) : array {
-        $refIndexQueryBuilder = $this->getQueryBuilderForTable('sys_refindex');
 
         $predicates = [
-            $refIndexQueryBuilder->expr()->eq(
+            $this->refIndexQueryBuilder->expr()->eq(
                 'ref_table',
-                $refIndexQueryBuilder->createNamedParameter($selectTable, \PDO::PARAM_STR)
+                $this->refIndexQueryBuilder->createNamedParameter($selectTable, \PDO::PARAM_STR)
             ),
-            $refIndexQueryBuilder->expr()->eq(
+            $this->refIndexQueryBuilder->expr()->eq(
                 'ref_uid',
-                $refIndexQueryBuilder->createNamedParameter($selectUid, \PDO::PARAM_INT)
+                $this->refIndexQueryBuilder->createNamedParameter($selectUid, \PDO::PARAM_INT)
             ),
-            $refIndexQueryBuilder->expr()->eq(
+            $this->refIndexQueryBuilder->expr()->eq(
                 'deleted',
-                $refIndexQueryBuilder->createNamedParameter(0, \PDO::PARAM_INT)
+                $this->refIndexQueryBuilder->createNamedParameter(0, \PDO::PARAM_INT)
             )
         ];
 
-        return  $refIndexQueryBuilder
+        return  $this->refIndexQueryBuilder
             ->select('*')
             ->from('sys_refindex')
             ->where(...$predicates)
@@ -164,6 +189,7 @@ class ReferenceRepository
 
 
     /**
+     * This function is used to get the pid for the tt_content element that refers to the selected page
      * @param $uid
      * @param $tablename
      * @param $queryBuilder
@@ -186,6 +212,7 @@ class ReferenceRepository
     }
 
     /**
+     * Generate query builders
      * @param string $tablename
      * @return QueryBuilder
      */
@@ -200,6 +227,7 @@ class ReferenceRepository
     }
 
     /**
+     * This function is used to get the name of the group that create the page
      * @param $pid
      * @param $queryBuilder
      * @return string|void
@@ -228,6 +256,7 @@ class ReferenceRepository
     }
 
     /**
+     * This function is used to check if tt_content element that refers to the selected page, if is hidden or deleted
      * @param $tableName
      * @param $uid
      * @return bool|int
@@ -235,11 +264,7 @@ class ReferenceRepository
      */
     protected function checkElementIfIsHidden($tableName, $uid){
         if($tableName == 'pages' || $tableName == 'tt_content'){
-            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
-                ->getQueryBuilderForTable($tableName);
-            $queryBuilder
-                ->getRestrictions()
-                ->removeAll();
+            $queryBuilder = $this->getQueryBuilderForTable($tableName);
             $predicates = [
                 $queryBuilder->expr()->eq(
                     'uid',

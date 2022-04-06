@@ -23,7 +23,7 @@
                 <source>No reference found</source>
                 <target>Aucune référence trouvée</target>
             </trans-unit>
-            <trans-unit id="hideDisableAndDeletedElements" >
+            <trans-unit id="hideDisableOrDeletedElements" >
                 <source>Show deleted or hidden items</source>
                 <target>Afficher les éléments effacés ou masqués</target>
             </trans-unit>
@@ -31,6 +31,14 @@
                 <source>references found</source>
                 <target>références trouvées</target>
             </trans-unit>
+             <trans-unit id="hidden" >
+                <source> - hidden</source>
+                <target> - caché</target>
+             </trans-unit>
+              <trans-unit id="deleted" >
+                 <source> - deleted</source>
+                 <target> - supprimé</target>
+              </trans-unit>
 		</body>
 	</file>
 </xliff>
