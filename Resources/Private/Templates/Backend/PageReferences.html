@@ -2,9 +2,12 @@
 {namespace core=TYPO3\CMS\Core\ViewHelpers}
 <f:layout name="TabContent" />
 <f:section name="Main">
-        <f:if condition="{references}">
-            <f:then>
 
+    <f:if condition="{references}">
+            <f:then>
+                <br>
+                <h4><strong>{numberOfReferences}</strong> <f:translate key="LLL:EXT:qc_references/Resources/Private/Language/locallang.xlf:referencesFound" /></h4>
+                <br>
                 <div class="table-fit">
                     <table class="table table-striped table-hover">
                         <thead>
@@ -14,12 +17,10 @@
                             <th>Groupe BE</th>
                             <th><f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:show_item.php.table" /></th>
                             <th>Slug</th>
-
                         </tr>
                         </thead>
                         <tbody>
                         <f:for each="{references}" as="line">
-
                             <tr>
                                 <f:if condition="{line.record}">
                                     <f:then>

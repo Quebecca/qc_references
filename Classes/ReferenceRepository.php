@@ -38,10 +38,12 @@ class ReferenceRepository
 
     const DEFAULT_ITEMS_PER_PAGE = 20;
 
+    protected int $numberOfReferences = 0;
+
+
     public function __construct(){
         $this->backendUserGroupRepository = $backendUserGroupRepository ?? GeneralUtility::makeInstance(BackendUserGroupRepository::class);
         $this->iconFactory = GeneralUtility::makeInstance(IconFactory::class);
-
     }
 
     /**
@@ -76,6 +78,7 @@ class ReferenceRepository
             }
             $refLines[] = $this->mapRowToLine($row);
         }
+        $this->numberOfReferences = count($refLines);
         return $this->getPagination($refLines,$paginationPage,$itemsPerPage);
     }
 
@@ -293,6 +296,14 @@ class ReferenceRepository
     protected function getBackendUser(): BackendUserAuthentication
     {
         return $GLOBALS['BE_USER'];
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumberOfReferences(): int
+    {
+        return $this->numberOfReferences;
     }
 
 }

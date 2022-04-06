@@ -147,6 +147,7 @@ class ReferencesReport
         $pagination = $this->referenceRepository->getReferences($this->id,$this->showHiddenOrDeletedElements, $this->currentPaginationPage);
         $view = $this->createView('PageReferences');
         $view->assignMultiple([
+            'numberOfReferences' => $this->referenceRepository->getNumberOfReferences(),
             'showHiddenOrDeletedElements' => $this->showHiddenOrDeletedElements,
             'currentPage' => $this->id,
             'references' => $pagination['paginatedData'],

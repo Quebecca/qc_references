@@ -27,6 +27,10 @@
                 <source>Show deleted or hidden items</source>
                 <target>Afficher les éléments effacés ou masqués</target>
             </trans-unit>
+            <trans-unit id="referencesFound" >
+                <source>references found</source>
+                <target>références trouvées</target>
+            </trans-unit>
 		</body>
 	</file>
 </xliff>

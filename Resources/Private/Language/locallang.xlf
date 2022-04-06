@@ -21,6 +21,9 @@
             <trans-unit id="hideDisableOrDeletedElements" >
                 <source>Show deleted or hidden items</source>
             </trans-unit>
+            <trans-unit id="referencesFound" >
+                <source>references found</source>
+            </trans-unit>
 		</body>
 	</file>
 </xliff>
