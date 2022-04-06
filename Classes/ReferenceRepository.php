@@ -8,6 +8,7 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Beuser\Domain\Repository\BackendUserGroupRepository;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Localization\LanguageService;
@@ -53,42 +54,102 @@ class ReferenceRepository
     public function getReferences($ref,$showHiddenOrDeletedElement, $paginationPage): array
     {
         $this->modTS = BackendUtility::getPagesTSconfig($ref)['mod.']['qcReferences.'];
-        $tsTables = explode(",",$this->modTS['alowedTables']);
+        $tsTables = explode(",",$this->modTS['allowedTables']);
         $tsItemsPerPage = (int)$this->modTS['itemsPerPage'];
         $itemsPerPage = $tsItemsPerPage > 0 ?  $tsItemsPerPage : self::DEFAULT_ITEMS_PER_PAGE;
 
-
+        // Get the allowed tables for elements that refers to the selected page
         $alowedTables = array_map(function($item){
            return str_replace(' ', '', $item);
         }, $tsTables);
 
-
         $refLines = [];
+        $rows = $this->getReferencesFromDB('pages', $ref);
+        foreach ($rows as $row) {
+            if(!in_array($row['tablename'], $alowedTables)){
+                continue;
+            }
+            // Check if the element is hidden or deleted
+            $ckeck = $this->checkElementIfIsHidden($row['tablename'], $row['recuid']);
+            if($showHiddenOrDeletedElement == 0 && $ckeck){
+                continue;
+            }
+            $refLines[] = $this->mapRowToLine($row);
+        }
+        return $this->getPagination($refLines,$paginationPage,$itemsPerPage);
+    }
+
+    /**
+     * @param $row
+     * @return array
+     */
+    public function mapRowToLine($row): array
+    {
+        // Generate query builder for used tables
+        $ttContentQueryBuilder = $this->getQueryBuilderForTable('tt_content');
+        $pagesQueryBuilder = $this->getQueryBuilderForTable('pages');
         $lang = $this->getLanguageService();
-        $selectTable = 'pages';
-        $selectUid = $ref;
+        $record = BackendUtility::getRecord($row['tablename'], $row['recuid']);
+        if ($record) {
+            $parentRecord = BackendUtility::getRecord('pages', $record['pid']);
+            $parentRecordTitle = is_array($parentRecord)
+                ? BackendUtility::getRecordTitle('pages', $parentRecord)
+                : '';
 
+            $line['icon'] = $this->iconFactory->getIconForRecord($row['tablename'], $record, Icon::SIZE_SMALL)->render();
+            $line['row'] = $row;
+            $line['record'] = $record;
+            $line['recordTitle'] = BackendUtility::getRecordTitle($row['tablename'], $record, false, true);
+            $line['parentRecordTitle'] = $parentRecordTitle;
+            $line['title'] = $lang->sL($GLOBALS['TCA'][$row['tablename']]['ctrl']['title']);
+            $line['tablename'] = $row['tablename'];
 
+            if( $row['tablename'] == 'tt_content'){
+                $line['pid'] = $this->getPid($row['recuid'], $row['tablename'], $ttContentQueryBuilder)['pid'];
+                $line['groupName'] = $this->getBEGroup($line['pid'],$pagesQueryBuilder);
+                $line['pageLink'] = htmlspecialchars(BackendUtility::viewOnClick($record['pid'], '', BackendUtility::BEgetRootLine($record['pid'])));
+            }
+            else {
+                if( $row['tablename'] == 'pages'){
+                    $line['groupName'] = $this->getBEGroup($row['recuid'], $pagesQueryBuilder);
+                    $line['pageLink'] = htmlspecialchars(BackendUtility::viewOnClick($row['recuid'], '', BackendUtility::BEgetRootLine($row['recuid'])));
+                }
+                else{
+                    $line['pid'] = '-';
+                }
+            }
 
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
-            ->getQueryBuilderForTable('sys_refindex');
+            $line['path'] = BackendUtility::getRecordPath($record['pid'], '', 0, 0);
+        } else {
+            $line['row'] = $row;
+            $line['title'] = $lang->sL($GLOBALS['TCA'][$row['tablename']]['ctrl']['title']) ?: $row['tablename'];
+        }
+        return $line;
+    }
+
+    /**
+     * @return array
+     * @throws Exception
+     */
+    public function getReferencesFromDB($selectTable, $selectUid) : array {
+        $refIndexQueryBuilder = $this->getQueryBuilderForTable('sys_refindex');
 
         $predicates = [
-            $queryBuilder->expr()->eq(
+            $refIndexQueryBuilder->expr()->eq(
                 'ref_table',
-                $queryBuilder->createNamedParameter($selectTable, \PDO::PARAM_STR)
+                $refIndexQueryBuilder->createNamedParameter($selectTable, \PDO::PARAM_STR)
             ),
-            $queryBuilder->expr()->eq(
+            $refIndexQueryBuilder->expr()->eq(
                 'ref_uid',
-                $queryBuilder->createNamedParameter($selectUid, \PDO::PARAM_INT)
+                $refIndexQueryBuilder->createNamedParameter($selectUid, \PDO::PARAM_INT)
             ),
-            $queryBuilder->expr()->eq(
+            $refIndexQueryBuilder->expr()->eq(
                 'deleted',
-                $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)
+                $refIndexQueryBuilder->createNamedParameter(0, \PDO::PARAM_INT)
             )
         ];
 
-        $rows = $queryBuilder
+        return  $refIndexQueryBuilder
             ->select('*')
             ->from('sys_refindex')
             ->where(...$predicates)
@@ -96,67 +157,17 @@ class ReferenceRepository
             ->execute()
             ->fetchAllAssociative();
 
-        foreach ($rows as $row) {
-            if(!in_array($row['tablename'], $alowedTables)){
-                continue;
-            }
-            // Check if the element is hidden or deleted
-            $ckeck = $this->checkElementIfIsHidden($row['tablename'], $row['recuid']);
-            // clicka = dont show
-            if($showHiddenOrDeletedElement == 0 && $ckeck){
-                continue;
-            }
-            $line = [];
-            $record = BackendUtility::getRecord($row['tablename'], $row['recuid']);
-            if ($record) {
-                $parentRecord = BackendUtility::getRecord('pages', $record['pid']);
-                $parentRecordTitle = is_array($parentRecord)
-                    ? BackendUtility::getRecordTitle('pages', $parentRecord)
-                    : '';
-
-                $line['icon'] = $this->iconFactory->getIconForRecord($row['tablename'], $record, Icon::SIZE_SMALL)->render();
-                $line['row'] = $row;
-                $line['record'] = $record;
-                $line['recordTitle'] = BackendUtility::getRecordTitle($row['tablename'], $record, false, true);
-                $line['parentRecordTitle'] = $parentRecordTitle;
-                $line['title'] = $lang->sL($GLOBALS['TCA'][$row['tablename']]['ctrl']['title']);
-                $line['tablename'] = $row['tablename'];
-
-                if( $row['tablename'] == 'tt_content'){
-                    $line['pid'] = $this->getPid($row['recuid'], $row['tablename'])['pid'];
-                    $line['groupName'] = $this->getBEGroup($line['pid']);
-                    $line['pageLink'] =htmlspecialchars(BackendUtility::viewOnClick($record['pid'], '', BackendUtility::BEgetRootLine($record['pid'])));
-                }
-                else {
-                    if( $row['tablename'] == 'pages'){
-                        $line['groupName'] = $this->getBEGroup($row['recuid']);
-                        $line['pageLink'] =htmlspecialchars(BackendUtility::viewOnClick($row['recuid'], '', BackendUtility::BEgetRootLine($row['recuid'])));
-                    }
-                    else{
-                        $line['pid'] = '-';
-                    }
-                }
-
-                $line['path'] = BackendUtility::getRecordPath($record['pid'], '', 0, 0);
-            } else {
-                $line['row'] = $row;
-                $line['title'] = $lang->sL($GLOBALS['TCA'][$row['tablename']]['ctrl']['title']) ?: $row['tablename'];
-            }
-            $refLines[] = $line;
-        }
-        return $this->getPagination($refLines,$paginationPage,$itemsPerPage);
     }
 
+
     /**
-     * @throws Exception
+     * @param $uid
+     * @param $tablename
+     * @param $queryBuilder
+     * @return mixed
      */
-    protected function getPid($uid, $tablename)
+    protected function getPid($uid, $tablename, $queryBuilder)
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
-            ->getQueryBuilderForTable($tablename);
-        $queryBuilder
-            ->getRestrictions()
-            ->removeAll();
         $predicates = [
             $queryBuilder->expr()->eq(
                 'uid',
@@ -172,15 +183,26 @@ class ReferenceRepository
     }
 
     /**
-     * @throws Exception
+     * @param string $tablename
+     * @return QueryBuilder
      */
-    protected function getBEGroup($pid){
+    public function getQueryBuilderForTable(string $tablename): QueryBuilder
+    {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable($tablename);
+        $queryBuilder
+            ->getRestrictions()
+            ->removeAll();
+        return $queryBuilder;
+    }
+
+    /**
+     * @param $pid
+     * @param $queryBuilder
+     * @return string|void
+     */
+    protected function getBEGroup($pid, $queryBuilder){
         if($pid != null) {
-            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
-                ->getQueryBuilderForTable('pages');
-            $queryBuilder
-                ->getRestrictions()
-                ->removeAll();
             $predicates = [
                 $queryBuilder->expr()->eq(
                     'uid',
@@ -203,6 +225,9 @@ class ReferenceRepository
     }
 
     /**
+     * @param $tableName
+     * @param $uid
+     * @return bool|int
      * @throws Exception
      */
     protected function checkElementIfIsHidden($tableName, $uid){
