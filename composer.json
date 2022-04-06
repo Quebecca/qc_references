@@ -29,7 +29,7 @@
 	},
 	"extra": {
 		"typo3/cms": {
-			"extension-key": "qc_redirects",
+			"extension-key": "qc_references",
 			"cms-package-dir": "{$vendor-dir}/typo3/cms",
 			"web-dir": ".Build/Web"
 		}
