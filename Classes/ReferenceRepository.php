@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 /***
  *
@@ -11,7 +12,6 @@ declare(strict_types=1);
  *
  ***/
 namespace Qc\QcReferences;
-
 
 use Doctrine\DBAL\Driver\Exception;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
@@ -53,7 +53,6 @@ class ReferenceRepository
      */
     protected int $numberOfReferences = 0;
 
-
     const LANG_FILE = 'LLL:EXT:qc_references/Resources/Private/Language/locallang.xlf:';
 
     /**
@@ -69,8 +68,8 @@ class ReferenceRepository
      */
     protected QueryBuilder $refIndexQueryBuilder;
 
-
-    public function __construct(){
+    public function __construct()
+    {
         $this->backendUserGroupRepository = $backendUserGroupRepository ?? GeneralUtility::makeInstance(BackendUserGroupRepository::class);
         $this->iconFactory = GeneralUtility::makeInstance(IconFactory::class);
         $this->refIndexQueryBuilder = $this->getQueryBuilderForTable('sys_refindex');
@@ -88,30 +87,30 @@ class ReferenceRepository
     public function getReferences($ref, $showHiddenOrDeletedElement, $paginationPage): array
     {
         $this->modTS = BackendUtility::getPagesTSconfig($ref)['mod.']['qcReferences.'];
-        $tsTables = explode(",",$this->modTS['allowedTables']);
+        $tsTables = explode(',', $this->modTS['allowedTables']);
         $tsItemsPerPage = (int)$this->modTS['itemsPerPage'];
         $itemsPerPage = $tsItemsPerPage > 0 ?  $tsItemsPerPage : self::DEFAULT_ITEMS_PER_PAGE;
 
         // Get the allowed tables for elements that refers to the selected page
-        $alowedTables = array_map(function($item){
-           return str_replace(' ', '', $item);
+        $alowedTables = array_map(function ($item) {
+            return str_replace(' ', '', $item);
         }, $tsTables);
 
         $refLines = [];
         $rows = $this->getReferencesFromDB('pages', $ref);
         foreach ($rows as $row) {
-            if(!in_array($row['tablename'], $alowedTables)){
+            if (!in_array($row['tablename'], $alowedTables)) {
                 continue;
             }
             // Check if the element is hidden or deleted
             $ckeck = $this->checkElementIfIsHidden($row['tablename'], $row['recuid']);
-            if($showHiddenOrDeletedElement == 0 && $ckeck){
+            if ($showHiddenOrDeletedElement == 0 && $ckeck) {
                 continue;
             }
             $refLines[] = $this->mapRowToLine($row);
         }
         $this->numberOfReferences = count($refLines);
-        return $this->getPagination($refLines,$paginationPage,$itemsPerPage);
+        return $this->getPagination($refLines, $paginationPage, $itemsPerPage);
     }
 
     /**
@@ -122,12 +121,12 @@ class ReferenceRepository
     public function mapRowToLine($row): array
     {
         $lang = $this->getLanguageService();
-        $record = BackendUtility::getRecord($row['tablename'], $row['recuid'],'*', '', false);
+        $record = BackendUtility::getRecord($row['tablename'], $row['recuid'], '*', '', false);
 
         $line['deleted'] = $record['deleted'];
         $line['elementDescription'] = 'uid : ' . $record['uid'];
         $status = $record['deleted'] ? 'deleted' :  ($record['hidden'] ? 'hidden' : '');
-        $line['elementDescription'] .= $lang->sL(self::LANG_FILE.$status);
+        $line['elementDescription'] .= $lang->sL(self::LANG_FILE . $status);
 
         $line['icon'] = $this->iconFactory->getIconForRecord($row['tablename'], $record, Icon::SIZE_SMALL)->render();
         $line['row'] = $row;
@@ -136,17 +135,15 @@ class ReferenceRepository
         $line['title'] = $lang->sL($GLOBALS['TCA'][$row['tablename']]['ctrl']['title']);
         $line['tablename'] = $row['tablename'];
 
-        if( $row['tablename'] == 'tt_content'){
+        if ($row['tablename'] == 'tt_content') {
             $line['pid'] = $this->getPid($row['recuid'], $row['tablename'], $this->ttContentQueryBuilder)['pid'];
-            $line['groupName'] = $this->getBEGroup($line['pid'],$this->pagesQueryBuilder);
+            $line['groupName'] = $this->getBEGroup($line['pid'], $this->pagesQueryBuilder);
             $line['pageLink'] = htmlspecialchars(BackendUtility::viewOnClick($record['pid'], '', BackendUtility::BEgetRootLine($record['pid'])));
-        }
-        else {
-            if( $row['tablename'] == 'pages'){
+        } else {
+            if ($row['tablename'] == 'pages') {
                 $line['groupName'] = $this->getBEGroup($row['recuid'], $this->pagesQueryBuilder);
-                $line['pageLink'] = htmlspecialchars(BackendUtility::viewOnClick($record['uid'], '', BackendUtility::BEgetRootLine($record['uid'])));
-            }
-            else{
+                $line['pageLink'] = htmlspecialchars(BackendUtility::viewOnClick($row['recuid'], '', BackendUtility::BEgetRootLine($row['recuid'])));
+            } else {
                 $line['pid'] = '-';
             }
         }
@@ -160,8 +157,8 @@ class ReferenceRepository
      * @return array
      * @throws Exception
      */
-    public function getReferencesFromDB($selectTable, $selectUid) : array {
-
+    public function getReferencesFromDB($selectTable, $selectUid): array
+    {
         $predicates = [
             $this->refIndexQueryBuilder->expr()->eq(
                 'ref_table',
@@ -184,9 +181,7 @@ class ReferenceRepository
             ->orderBy('tablename', 'DESC')
             ->execute()
             ->fetchAllAssociative();
-
     }
-
 
     /**
      * This function is used to get the pid for the tt_content element that refers to the selected page
@@ -232,8 +227,9 @@ class ReferenceRepository
      * @param $queryBuilder
      * @return string|void
      */
-    protected function getBEGroup($pid, $queryBuilder){
-        if($pid != null) {
+    protected function getBEGroup($pid, $queryBuilder)
+    {
+        if ($pid != null) {
             $predicates = [
                 $queryBuilder->expr()->eq(
                     'uid',
@@ -247,12 +243,11 @@ class ReferenceRepository
                 ->where(...$predicates)
                 ->execute()
                 ->fetchOne();
-            if($res != null){
+            if ($res != null) {
                 return $this->backendUserGroupRepository->findByUid($res)->getTitle();
             }
             return '';
         }
-
     }
 
     /**
@@ -262,8 +257,9 @@ class ReferenceRepository
      * @return bool|int
      * @throws Exception
      */
-    protected function checkElementIfIsHidden($tableName, $uid){
-        if($tableName == 'pages' || $tableName == 'tt_content'){
+    protected function checkElementIfIsHidden($tableName, $uid)
+    {
+        if ($tableName == 'pages' || $tableName == 'tt_content') {
             $queryBuilder = $this->getQueryBuilderForTable($tableName);
             $predicates = [
                 $queryBuilder->expr()->eq(
@@ -272,8 +268,8 @@ class ReferenceRepository
                 ),
             ];
 
-           $result =  $queryBuilder
-                ->select( 'hidden', 'deleted')
+            $result =  $queryBuilder
+                ->select('hidden', 'deleted')
                 ->from($tableName)
                 ->where(...$predicates)
                 ->execute()
@@ -281,7 +277,6 @@ class ReferenceRepository
             return $result['deleted'] == 1 || $result['hidden'] == 1;
         }
         return 0;
-
     }
 
     /**
@@ -330,5 +325,4 @@ class ReferenceRepository
     {
         return $this->numberOfReferences;
     }
-
 }

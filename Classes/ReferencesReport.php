@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 /***
  *
@@ -19,7 +20,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3\CMS\Info\Controller\InfoModuleController;
-
 
 class ReferencesReport
 {
@@ -58,7 +58,6 @@ class ReferencesReport
      */
     private ReferenceRepository $referenceRepository;
 
-
     const LANG_FILE = 'LLL:EXT:qc_references/Resources/Private/Language/locallang.xlf:';
 
     /**
@@ -76,7 +75,7 @@ class ReferencesReport
      *
      * @param InfoModuleController $pObj A reference to the parent (calling) object
      */
-    public function init( $pObj)
+    public function init($pObj)
     {
         $this->pObj = $pObj;
 
@@ -90,8 +89,6 @@ class ReferencesReport
         $this->pageRepository = $pageRepository ?? GeneralUtility::makeInstance(PageRepository::class);
         $this->localizationUtility = $localizationUtility ?? GeneralUtility::makeInstance(LocalizationUtility::class);
         $this->referenceRepository = $localizationUtility ?? GeneralUtility::makeInstance(ReferenceRepository::class);
-
-
     }
 
     /**
@@ -120,7 +117,7 @@ class ReferencesReport
         $this->view->assign('content', $this->renderContent());
         $this->view->assign('pageId', $this->id);
         $this->view->assign('showHiddenOrDeletedElements', $this->showHiddenOrDeletedElements);
-        $this->view->assign( 'pageTitle',$this->pageRepository->getPage($this->id, true)['title']);
+        $this->view->assign('pageTitle', $this->pageRepository->getPage($this->id, true)['title']);
         return $this->view->render();
     }
 
@@ -140,7 +137,7 @@ class ReferencesReport
     protected function renderContent(): string
     {
         $menuItems[] = [
-            'label' => $this->localizationUtility->translate(self::LANG_FILE.'mod_qcPageReferences'),
+            'label' => $this->localizationUtility->translate(self::LANG_FILE . 'mod_qcPageReferences'),
             'content' => $this->createViewForPageReferencesTable()->render()
         ];
         return $this->moduleTemplate->getDynamicTabMenu($menuItems, 'report-qcreferences');
@@ -154,7 +151,7 @@ class ReferencesReport
      */
     protected function createViewForPageReferencesTable(): StandaloneView
     {
-        $pagination = $this->referenceRepository->getReferences($this->id,$this->showHiddenOrDeletedElements, $this->currentPaginationPage);
+        $pagination = $this->referenceRepository->getReferences($this->id, $this->showHiddenOrDeletedElements, $this->currentPaginationPage);
         $view = $this->createView('PageReferences');
         $view->assignMultiple([
             'numberOfReferences' => $this->referenceRepository->getNumberOfReferences(),
@@ -165,5 +162,4 @@ class ReferencesReport
         ]);
         return $view;
     }
-
 }
