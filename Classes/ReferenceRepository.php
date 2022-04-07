@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Qc\QcReferences;
 
 use Doctrine\DBAL\Driver\Exception;
+use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Beuser\Domain\Repository\BackendUserGroupRepository;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
@@ -26,6 +27,7 @@ use TYPO3\CMS\Core\Pagination\ArrayPaginator;
 use TYPO3\CMS\Core\Pagination\SimplePagination;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 class ReferenceRepository
 {
@@ -68,6 +70,9 @@ class ReferenceRepository
      */
     protected QueryBuilder $refIndexQueryBuilder;
 
+
+    protected UriBuilder $uriBuilder;
+
     public function __construct()
     {
         $this->backendUserGroupRepository = $backendUserGroupRepository ?? GeneralUtility::makeInstance(BackendUserGroupRepository::class);
@@ -75,6 +80,8 @@ class ReferenceRepository
         $this->refIndexQueryBuilder = $this->getQueryBuilderForTable('sys_refindex');
         $this->ttContentQueryBuilder = $this->getQueryBuilderForTable('tt_content');
         $this->pagesQueryBuilder = $this->getQueryBuilderForTable('pages');
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->uriBuilder = $objectManager->get(UriBuilder::class);
     }
 
     /**
@@ -138,11 +145,12 @@ class ReferenceRepository
         if ($row['tablename'] == 'tt_content') {
             $line['pid'] = $this->getPid($row['recuid'], $row['tablename'], $this->ttContentQueryBuilder)['pid'];
             $line['groupName'] = $this->getBEGroup($line['pid'], $this->pagesQueryBuilder);
-            $line['pageLink'] = htmlspecialchars(BackendUtility::viewOnClick($record['pid'], '', BackendUtility::BEgetRootLine($record['pid'])));
+            $line['url'] =   $this->uriBuilder->reset()->setTargetPageUid($line['pid'])->buildFrontendUri();
+
         } else {
             if ($row['tablename'] == 'pages') {
                 $line['groupName'] = $this->getBEGroup($row['recuid'], $this->pagesQueryBuilder);
-                $line['pageLink'] = htmlspecialchars(BackendUtility::viewOnClick($row['recuid'], '', BackendUtility::BEgetRootLine($row['recuid'])));
+                $line['url'] = $this->uriBuilder->reset()->setTargetPageUid($row['recuid'])->buildFrontendUri();
             } else {
                 $line['pid'] = '-';
             }
