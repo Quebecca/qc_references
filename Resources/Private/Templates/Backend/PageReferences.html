@@ -10,9 +10,9 @@
                         <thead>
                         <tr>
                             <th ><f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:show_item.php.title" /></th>
-                            <th><f:translate key="LLL:EXT:qc_references/Resources/Private/Language/locallang.xlf:pageUid"/></th>
                             <th>Groupe BE</th>
                             <th><f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:show_item.php.table" /></th>
+                            <th><f:translate key="LLL:EXT:qc_references/Resources/Private/Language/locallang.xlf:pageUid"/></th>
                             <th>Slug</th>
                         </tr>
                         </thead>
@@ -37,14 +37,14 @@
                                                 {line.recordTitle}
                                             </div>
                                         </td>
+                                        <td>{line.groupName}</td>
+                                        <td>{line.title}</td>
                                         <td>
                                             <f:if condition="{line.tablename} != 'pages'">
                                                 <f:then>{line.pid}</f:then>
                                                 <f:else>{line.record.uid}</f:else>
                                             </f:if>
                                         </td>
-                                        <td>{line.groupName}</td>
-                                        <td>{line.title}</td>
                                     </f:then>
                                     <f:else>
                                         <td class="col-icon"></td>
