@@ -175,10 +175,6 @@ class ReferenceRepository
             $this->refIndexQueryBuilder->expr()->eq(
                 'ref_uid',
                 $this->refIndexQueryBuilder->createNamedParameter($selectUid, \PDO::PARAM_INT)
-            ),
-            $this->refIndexQueryBuilder->expr()->eq(
-                'deleted',
-                $this->refIndexQueryBuilder->createNamedParameter(0, \PDO::PARAM_INT)
             )
         ];
 
