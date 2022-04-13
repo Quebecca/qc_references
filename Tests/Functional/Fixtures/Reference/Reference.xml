@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dataset>
+    <pages>
+        <uid>3</uid>
+        <pid>1</pid>
+        <title>Page 1</title>
+        <description>Page 1 description</description>
+        <deleted>0</deleted>
+    </pages>
+    <pages>
+        <uid>2</uid>
+        <pid>1</pid>
+        <perms_groupid>1</perms_groupid>
+        <title>Page 2</title>
+        <description>Page 2 Description</description>
+        <deleted>0</deleted>
+    </pages>
+
+    <tt_content>
+        <uid>1</uid>
+        <pid>2</pid>
+        <header>my header</header>
+        <deleted>0</deleted>
+    </tt_content>
+
+    <be_groups>
+        <uid>1</uid>
+        <title>Group 1</title>
+    </be_groups>
+
+    <sys_refindex>
+        <tablename>tt_content</tablename>
+        <field>header_link</field>
+        <softref_key>typolink</softref_key>
+        <recuid>1</recuid>
+        <ref_uid>3</ref_uid>
+        <ref_table>pages</ref_table>
+    </sys_refindex>
+</dataset>
