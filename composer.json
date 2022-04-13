@@ -4,17 +4,28 @@
     "description": "Module sert à afficher les références à une page sélectionnée",
     "authors": [],
     "require": {
-        "typo3/cms-core": "^10.4.0 || ^11.4.0"
+        "typo3/cms-core": "^10.4.0 || ^11.4.0",
+		"typo3/cms-backend": "^10.4.24 || ^11.5.6",
+		"typo3/cms-beuser": "^10.4.24 || ^11.5.6"
     },
     "autoload": {
         "psr-4": {
-            "Qc\\QcReferences\\": "Classes"
+            "Qc\\QcReferences\\": "Classes/"
         }
     },
+	"autoload-dev": {
+		"psr-4": {
+			"Qc\\QcReferencesTest\\Tests\\": "Tests/"
+		}
+	},
 	"config": {
 		"sort-packages": true,
 		"vendor-dir": ".Build/vendor",
-		"bin-dir": ".Build/bin"
+		"bin-dir": ".Build/bin",
+		"allow-plugins": {
+			"typo3/cms-composer-installers": true,
+			"typo3/class-alias-loader": true
+		}
 	},
 	"require-dev": {
 		"php": "^7.3 || ^7.4",

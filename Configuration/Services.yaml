@@ -1,0 +1,15 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  Qc\QcReferences\:
+    resource: '../Classes/*'
+
+  Qc\QcReferences\ReferenceRepository:
+    public: true
+
+
+
+

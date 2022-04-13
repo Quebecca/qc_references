@@ -39,7 +39,7 @@ class QcReferencesRepositoryFunctionalTest extends FunctionalTestCase
     /**
      * @var array<int, non-empty-string>
      */
-    protected $testExtensionsToLoad = ['typo3conf/ext/qc_references_cicd'];
+    protected $testExtensionsToLoad = ['typo3conf/ext/qc_references'];
 
     /**
      * @throws ContainerExceptionInterface
@@ -63,7 +63,7 @@ class QcReferencesRepositoryFunctionalTest extends FunctionalTestCase
 
     /**
      * @test
-     * @throws \Doctrine\DBAL\Driver\Exception
+     * @throws \Doctrine\DBAL\Driver\Exception|\TYPO3\TestingFramework\Core\Exception
      */
     public function findByPageUidExisitingReferences(): void
     {

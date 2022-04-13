@@ -70,7 +70,6 @@ class ReferenceRepository
      */
     protected QueryBuilder $refIndexQueryBuilder;
 
-
     protected UriBuilder $uriBuilder;
 
     public function __construct()
@@ -146,7 +145,6 @@ class ReferenceRepository
             $line['pid'] = $this->getPid($row['recuid'], $row['tablename'], $this->ttContentQueryBuilder)['pid'];
             $line['groupName'] = $this->getBEGroup($line['pid'], $this->pagesQueryBuilder);
             $line['url'] =   $this->uriBuilder->reset()->setTargetPageUid($line['pid'])->buildFrontendUri();
-
         } else {
             if ($row['tablename'] == 'pages') {
                 $line['groupName'] = $this->getBEGroup($row['recuid'], $this->pagesQueryBuilder);
