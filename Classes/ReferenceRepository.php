@@ -13,8 +13,8 @@ declare(strict_types=1);
  ***/
 namespace Qc\QcReferences;
 
+use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\Exception;
-use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Beuser\Domain\Repository\BackendUserGroupRepository;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
@@ -27,6 +27,7 @@ use TYPO3\CMS\Core\Pagination\ArrayPaginator;
 use TYPO3\CMS\Core\Pagination\SimplePagination;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 class ReferenceRepository
@@ -89,6 +90,7 @@ class ReferenceRepository
      * @param int|File $ref Filename or uid
      * @return array
      * @throws Exception
+     * @throws DBALException
      */
     public function getReferences($ref, $showHiddenOrDeletedElement, $paginationPage): array
     {
@@ -113,10 +115,28 @@ class ReferenceRepository
             if ($showHiddenOrDeletedElement == 0 && $ckeck) {
                 continue;
             }
-            $refLines[] = $this->mapRowToLine($row);
+
+            $line = $this->mapRowToLine($row);
+            $line['url'] = $this->buirUriForRow($line);
+            $refLines[] = $line;
         }
         $this->numberOfReferences = count($refLines);
         return $this->getPagination($refLines, $paginationPage, $itemsPerPage);
+    }
+
+    /**
+     * @param $line
+     * @return string
+     */
+    public function buirUriForRow($line): string
+    {
+        if ($line['tableName'] == 'tt_cotent') {
+            return  $this->uriBuilder->reset()->setTargetPageUid($line['pid'])->buildFrontendUri();
+        }
+        if ($line['tableName'] == 'pages') {
+            return $this->uriBuilder->reset()->setTargetPageUid($line['recuid'])->buildFrontendUri();
+        }
+        return '';
     }
 
     /**
@@ -140,15 +160,14 @@ class ReferenceRepository
         $line['recordTitle'] = BackendUtility::getRecordTitle($row['tablename'], $record, false, true);
         $line['title'] = $lang->sL($GLOBALS['TCA'][$row['tablename']]['ctrl']['title']);
         $line['tablename'] = $row['tablename'];
+        $line['recuid'] = $row['recuid'];
 
         if ($row['tablename'] == 'tt_content') {
             $line['pid'] = $this->getPid($row['recuid'], $row['tablename'], $this->ttContentQueryBuilder)['pid'];
             $line['groupName'] = $this->getBEGroup($line['pid'], $this->pagesQueryBuilder);
-            $line['url'] =   $this->uriBuilder->reset()->setTargetPageUid($line['pid'])->buildFrontendUri();
         } else {
             if ($row['tablename'] == 'pages') {
                 $line['groupName'] = $this->getBEGroup($row['recuid'], $this->pagesQueryBuilder);
-                $line['url'] = $this->uriBuilder->reset()->setTargetPageUid($row['recuid'])->buildFrontendUri();
             } else {
                 $line['pid'] = '-';
             }
