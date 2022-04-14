@@ -130,10 +130,10 @@ class ReferenceRepository
      */
     public function buirUriForRow($line): string
     {
-        if ($line['tableName'] == 'tt_cotent') {
+        if ($line['tablename'] == 'tt_content') {
             return  $this->uriBuilder->reset()->setTargetPageUid($line['pid'])->buildFrontendUri();
         }
-        if ($line['tableName'] == 'pages') {
+        if ($line['tablename'] == 'pages') {
             return $this->uriBuilder->reset()->setTargetPageUid($line['recuid'])->buildFrontendUri();
         }
         return '';
