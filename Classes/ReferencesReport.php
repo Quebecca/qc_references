@@ -148,6 +148,7 @@ class ReferencesReport
      *
      * @return StandaloneView
      * @throws Exception
+     * @throws \Doctrine\DBAL\DBALException
      */
     protected function createViewForPageReferencesTable(): StandaloneView
     {
