@@ -27,9 +27,6 @@ jobs:
 
       - name: cgl
         run: Build/Scripts/runTests.sh -p ${{ matrix.php }} -s cgl -v -n
-        
-      - name: uniTests
-        run: Build/Scripts/runTests.sh -p ${{ matrix.php }} -s unit
-        
+
       - name: funtionalTests
         run: Build/Scripts/runTests.sh -p ${{ matrix.php }} -s functional
