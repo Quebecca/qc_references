@@ -15,7 +15,7 @@ checked:
 
 Coding guidelines (CGL)
 functional tests
-For more information, see the file .github/workflows/tests.yml and
+For more information, see the file .github/workflows/qc-references-workflow.yaml and
 the documentation on https://docs.typo3.org/m/typo3/reference-coreapi/10.4/en-us/Testing/ExtensionTesting.html.
 
 ###CGL
@@ -25,7 +25,7 @@ the documentation on https://docs.typo3.org/m/typo3/reference-coreapi/10.4/en-us
 
 
 
-- Check in fix CGL in PHP files : 
+- Check and fix CGL in PHP files : 
 
   ``Build/Scripts/runTests.sh -s cgl -v``
 
