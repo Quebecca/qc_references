@@ -71,7 +71,6 @@ class ReferenceRepository
      */
     protected QueryBuilder $refIndexQueryBuilder;
 
-    protected UriBuilder $uriBuilder;
 
     public function __construct()
     {
@@ -80,8 +79,6 @@ class ReferenceRepository
         $this->refIndexQueryBuilder = $this->getQueryBuilderForTable('sys_refindex');
         $this->ttContentQueryBuilder = $this->getQueryBuilderForTable('tt_content');
         $this->pagesQueryBuilder = $this->getQueryBuilderForTable('pages');
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->uriBuilder = $objectManager->get(UriBuilder::class);
     }
 
     /**
@@ -117,22 +114,12 @@ class ReferenceRepository
             }
 
             $line = $this->mapRowToLine($row);
-            $line['url'] = $this->buirUriForRow($line);
             $refLines[] = $line;
         }
         $this->numberOfReferences = count($refLines);
         return $this->getPagination($refLines, $paginationPage, $itemsPerPage);
     }
 
-    /**
-     * @param $line
-     * @return string
-     */
-    public function buirUriForRow($line): string
-    {
-        $key = $line['tablename'] == 'tt_content' ? 'pid' : ($line['tablename'] == 'pages' ? 'recuid' : '');
-        return $key != '' ? $this->uriBuilder->reset()->setTargetPageUid($line[$key])->buildFrontendUri() : '';
-    }
 
     /**
      * This function is used to map and process returned data from the DB

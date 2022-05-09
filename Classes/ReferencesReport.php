@@ -13,10 +13,13 @@ declare(strict_types=1);
  ***/
 namespace Qc\QcReferences;
 
+use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\Exception;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3\CMS\Info\Controller\InfoModuleController;
@@ -71,6 +74,19 @@ class ReferencesReport
     private int $showHiddenOrDeletedElements = 0;
 
     /**
+     * @var UriBuilder|mixed|object
+     */
+    protected UriBuilder $uriBuilder;
+
+
+
+    public function __construct()
+    {
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->uriBuilder = $objectManager->get(UriBuilder::class);
+    }
+
+    /**
      * Init, called from parent object
      *
      * @param InfoModuleController $pObj A reference to the parent (calling) object
@@ -110,6 +126,7 @@ class ReferencesReport
      *
      * @return string Module content
      * @throws Exception
+     * @throws DBALException
      */
     public function main(): string
     {
@@ -133,6 +150,7 @@ class ReferencesReport
     /**
      * Create tabs to split the report and the checkLink functions
      * @throws Exception
+     * @throws DBALException
      */
     protected function renderContent(): string
     {
@@ -148,19 +166,38 @@ class ReferencesReport
      *
      * @return StandaloneView
      * @throws Exception
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     protected function createViewForPageReferencesTable(): StandaloneView
     {
         $pagination = $this->referenceRepository->getReferences($this->id, $this->showHiddenOrDeletedElements, $this->currentPaginationPage);
+        $data = [];
+        // Build URi For rendering records
+        foreach ($pagination['paginatedData'] as $record){
+            $record['url'] = $this->buirUriForRow($record);
+            $data [] = $record;
+        }
         $view = $this->createView('PageReferences');
         $view->assignMultiple([
             'numberOfReferences' => $this->referenceRepository->getNumberOfReferences(),
             'showHiddenOrDeletedElements' => $this->showHiddenOrDeletedElements,
             'currentPage' => $this->id,
-            'references' => $pagination['paginatedData'],
+            'references' => $data,
             'pagination' => $pagination['pagination'],
         ]);
         return $view;
     }
+
+    /**
+     * @param $line
+     * @return string
+     */
+    public function buirUriForRow($line): string
+    {
+        $key = $line['tablename'] == 'tt_content' ? 'pid' : ($line['tablename'] == 'pages' ? 'recuid' : '');
+        return $key != '' ? $this->uriBuilder->reset()->setTargetPageUid($line[$key])->buildFrontendUri() : '';
+    }
+
+
+
 }
