@@ -131,7 +131,7 @@ class ReferenceRepository
         $line['elementDescription'] = 'uid : ' . $record['uid'];
         $status = $record['deleted'] ? 'deleted' :  ($record['hidden'] ? 'hidden' : '');
         $line['elementDescription'] .= ' ' . $this->getItemStatus($record['starttime'], $record['endtime'])['statusMessage'];
-        $line['elementDescription'] .= ' - ' . $status;
+        $line['elementDescription'] .= $status != '' ? ' - ' . $status : '';
         $line['icon'] = $this->iconFactory->getIconForRecord($row['tablename'], $record, Icon::SIZE_SMALL)->render();
         $line['row'] = $row;
         $line['record'] = $record;
