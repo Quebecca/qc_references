@@ -130,8 +130,8 @@ class ReferenceRepository
         $line['deleted'] = $record['deleted'];
         $line['elementDescription'] = 'uid : ' . $record['uid'];
         $status = $record['deleted'] ? 'deleted' :  ($record['hidden'] ? 'hidden' : '');
-        $line['elementDescription'] .= $lang->sL(self::LANG_FILE . $status);
-
+        $line['elementDescription'] .= ' ' . $this->getItemStatus($record['starttime'], $record['endtime'])['statusMessage'];
+        $line['elementDescription'] .= ' - ' . $status;
         $line['icon'] = $this->iconFactory->getIconForRecord($row['tablename'], $record, Icon::SIZE_SMALL)->render();
         $line['row'] = $row;
         $line['record'] = $record;
@@ -153,6 +153,37 @@ class ReferenceRepository
         $line['path'] = BackendUtility::getRecordPath($record['pid'], '', 0, 0);
 
         return $line;
+    }
+
+    /**
+     * This function returns the status of the stored element
+     * @param $startTime
+     * @param $endTime
+     * @return string[]
+     */
+    public function getItemStatus($startTime, $endTime): array
+    {
+        $lang = $this->getLanguageService();
+        if ($endTime !== 0 && $endTime < time()) {
+            $numberOfDays = round((time() - $endTime) / (60*60*24));
+            return  [
+                'status' => 'expired',
+                'statusMessage' => $lang->sL(self::LANG_FILE . 'stop') . ' ' . date('d-m-y', $endTime)
+                    . " ( $numberOfDays " . $lang->sL(self::LANG_FILE . 'days') . ' )'
+            ];
+        }
+        if ($startTime !== 0 && $startTime > time()) {
+            $numberOfDays = round(($startTime - time()) / (60 * 60 * 24));
+            return [
+                'status' => 'notAvailable',
+                'statusMessage' => $lang->sL(self::LANG_FILE . 'start') . ' ' . date('d-m-y', $startTime)
+                    . " ( $numberOfDays " . $lang->sL(self::LANG_FILE . 'days') . ' )'
+            ];
+        }
+        return [
+            'status' => 'available',
+            'statusMessage' => ''
+        ];
     }
 
     /**

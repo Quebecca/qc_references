@@ -31,14 +31,26 @@
                 <source>references found</source>
                 <target>références trouvées</target>
             </trans-unit>
-             <trans-unit id="hidden" >
+            <trans-unit id="hidden" >
                 <source> - hidden</source>
                 <target> - caché</target>
-             </trans-unit>
-              <trans-unit id="deleted" >
-                 <source> - deleted</source>
-                 <target> - supprimé</target>
-              </trans-unit>
+            </trans-unit>
+            <trans-unit id="deleted" >
+                <source> - deleted</source>
+                <target> - supprimé</target>
+            </trans-unit>
+            <trans-unit id="stop" >
+                <source>Stop</source>
+                <target>Arrêt</target>
+            </trans-unit>
+            <trans-unit id="start" >
+                <source>Start</source>
+                <target>Lancement</target>
+            </trans-unit>
+            <trans-unit id="days" >
+                <source>days</source>
+                <target>jours</target>
+            </trans-unit>
 		</body>
 	</file>
 </xliff>

@@ -30,6 +30,15 @@
             <trans-unit id="deleted" >
                 <source> - deleted</source>
             </trans-unit>
+            <trans-unit id="stop" >
+                <source>Stop</source>
+            </trans-unit>
+            <trans-unit id="start" >
+                <source>Start</source>
+            </trans-unit>
+            <trans-unit id="days" >
+                <source>days</source>
+            </trans-unit>
 		</body>
 	</file>
 </xliff>
