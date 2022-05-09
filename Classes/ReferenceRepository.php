@@ -27,8 +27,6 @@ use TYPO3\CMS\Core\Pagination\ArrayPaginator;
 use TYPO3\CMS\Core\Pagination\SimplePagination;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 class ReferenceRepository
 {
@@ -70,7 +68,6 @@ class ReferenceRepository
      * @var QueryBuilder
      */
     protected QueryBuilder $refIndexQueryBuilder;
-
 
     public function __construct()
     {
@@ -119,7 +116,6 @@ class ReferenceRepository
         $this->numberOfReferences = count($refLines);
         return $this->getPagination($refLines, $paginationPage, $itemsPerPage);
     }
-
 
     /**
      * This function is used to map and process returned data from the DB

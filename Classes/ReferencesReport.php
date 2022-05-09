@@ -78,8 +78,6 @@ class ReferencesReport
      */
     protected UriBuilder $uriBuilder;
 
-
-
     public function __construct()
     {
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
@@ -173,7 +171,7 @@ class ReferencesReport
         $pagination = $this->referenceRepository->getReferences($this->id, $this->showHiddenOrDeletedElements, $this->currentPaginationPage);
         $data = [];
         // Build URi For rendering records
-        foreach ($pagination['paginatedData'] as $record){
+        foreach ($pagination['paginatedData'] as $record) {
             $record['url'] = $this->buirUriForRow($record);
             $data [] = $record;
         }
@@ -197,7 +195,4 @@ class ReferencesReport
         $key = $line['tablename'] == 'tt_content' ? 'pid' : ($line['tablename'] == 'pages' ? 'recuid' : '');
         return $key != '' ? $this->uriBuilder->reset()->setTargetPageUid($line[$key])->buildFrontendUri() : '';
     }
-
-
-
 }
