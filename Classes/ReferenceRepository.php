@@ -27,8 +27,6 @@ use TYPO3\CMS\Core\Pagination\ArrayPaginator;
 use TYPO3\CMS\Core\Pagination\SimplePagination;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 class ReferenceRepository
 {
@@ -71,8 +69,6 @@ class ReferenceRepository
      */
     protected QueryBuilder $refIndexQueryBuilder;
 
-    protected UriBuilder $uriBuilder;
-
     public function __construct()
     {
         $this->backendUserGroupRepository = $backendUserGroupRepository ?? GeneralUtility::makeInstance(BackendUserGroupRepository::class);
@@ -80,8 +76,6 @@ class ReferenceRepository
         $this->refIndexQueryBuilder = $this->getQueryBuilderForTable('sys_refindex');
         $this->ttContentQueryBuilder = $this->getQueryBuilderForTable('tt_content');
         $this->pagesQueryBuilder = $this->getQueryBuilderForTable('pages');
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->uriBuilder = $objectManager->get(UriBuilder::class);
     }
 
     /**
@@ -117,21 +111,10 @@ class ReferenceRepository
             }
 
             $line = $this->mapRowToLine($row);
-            $line['url'] = $this->buirUriForRow($line);
             $refLines[] = $line;
         }
         $this->numberOfReferences = count($refLines);
         return $this->getPagination($refLines, $paginationPage, $itemsPerPage);
-    }
-
-    /**
-     * @param $line
-     * @return string
-     */
-    public function buirUriForRow($line): string
-    {
-        $key = $line['tablename'] == 'tt_content' ? 'pid' : ($line['tablename'] == 'pages' ? 'recuid' : '');
-        return $key != '' ? $this->uriBuilder->reset()->setTargetPageUid($line[$key])->buildFrontendUri() : '';
     }
 
     /**
