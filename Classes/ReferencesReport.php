@@ -13,10 +13,12 @@ declare(strict_types=1);
  ***/
 namespace Qc\QcReferences;
 
+use TYPO3\CMS\Core\Page\PageRenderer;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\Exception;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
+use TYPO3\CMS\Core\Utility\DebugUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -26,6 +28,8 @@ use TYPO3\CMS\Info\Controller\InfoModuleController;
 
 class ReferencesReport
 {
+    const LANG_FILE = 'LLL:EXT:qc_references/Resources/Private/Language/locallang.xlf:';
+
     /**
      * @var InfoModuleController Contains a reference to the parent calling object
      */
@@ -61,8 +65,6 @@ class ReferencesReport
      */
     private ReferenceRepository $referenceRepository;
 
-    const LANG_FILE = 'LLL:EXT:qc_references/Resources/Private/Language/locallang.xlf:';
-
     /**
      * @var int
      */
@@ -80,6 +82,7 @@ class ReferencesReport
 
     public function __construct()
     {
+        //@deprecated  you should use Dependency injection
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->uriBuilder = $objectManager->get(UriBuilder::class);
     }
@@ -129,6 +132,7 @@ class ReferencesReport
     public function main(): string
     {
         $this->initialize();
+        // @Note use assigne multiple
         $this->view->assign('content', $this->renderContent());
         $this->view->assign('pageId', $this->id);
         $this->view->assign('showHiddenOrDeletedElements', $this->showHiddenOrDeletedElements);

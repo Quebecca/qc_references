@@ -15,7 +15,6 @@ $EM_CONF[$_EXTKEY] = [
     'description' => "Module sert à afficher les références d'une page sélectionnée.",
     'category' => 'Module',
     'state' => 'beta',
-    'clearCacheOnLoad' => 0,
     'version' => '1.0.0',
     'autoload' => [
         'psr-4' => [

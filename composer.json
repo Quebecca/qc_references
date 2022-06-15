@@ -1,48 +1,47 @@
 {
     "name": "qc/qc-references",
-    "type": "typo3-cms-extension",
     "description": "Module sert à afficher les références à une page sélectionnée",
-    "authors": [],
+    "license": "GPL-2.0-or-later",
+    "type": "typo3-cms-extension",
     "require": {
-        "typo3/cms-core": "^10.4.0 || ^11.4.0",
-		"typo3/cms-backend": "^10.4.24 || ^11.5.6",
-		"typo3/cms-beuser": "^10.4.24 || ^11.5.6"
+        "typo3/cms-backend": "^10.4 || ^11.5",
+        "typo3/cms-beuser": "^10.4 || ^11.5",
+        "typo3/cms-core": "^10.4 || ^11.5"
     },
     "autoload": {
         "psr-4": {
             "Qc\\QcReferences\\": "Classes/"
         }
     },
-	"autoload-dev": {
-		"psr-4": {
-			"Qc\\QcReferencesTest\\Tests\\": "Tests/"
-		}
-	},
-	"config": {
-		"sort-packages": true,
-		"vendor-dir": ".Build/vendor",
-		"bin-dir": ".Build/bin",
-		"allow-plugins": {
-			"typo3/cms-composer-installers": true,
-			"typo3/class-alias-loader": true
-		}
-	},
-	"require-dev": {
-		"php": "^7.3 || ^7.4",
-		"friendsofphp/php-cs-fixer": "^2.18.6",
-		"phpunit/phpunit": "^8.5.21",
-		"typo3/testing-framework": "^6.14.0"
-	},
-	"scripts": {
-		"post-autoload-dump": [
-			"TYPO3\\TestingFramework\\Composer\\ExtensionTestEnvironment::prepare"
-		]
-	},
-	"extra": {
-		"typo3/cms": {
-			"extension-key": "qc_references",
-			"cms-package-dir": "{$vendor-dir}/typo3/cms",
-			"web-dir": ".Build/Web"
-		}
-	}
+    "autoload-dev": {
+        "psr-4": {
+            "Qc\\QcReferencesTest\\Tests\\": "Tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "vendor-dir": ".Build/vendor",
+        "bin-dir": ".Build/bin",
+        "allow-plugins": {
+            "typo3/cms-composer-installers": true,
+            "typo3/class-alias-loader": true
+        }
+    },
+    "require-dev": {
+        "php": "^7.3 || ^7.4",
+        "friendsofphp/php-cs-fixer": "^2.18.6",
+        "phpunit/phpunit": "^8.5.21",
+        "typo3/testing-framework": "^6.14.0"
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "TYPO3\\TestingFramework\\Composer\\ExtensionTestEnvironment::prepare"
+        ]
+    },
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "qc_references",
+            "web-dir": ".Build/Web"
+        }
+    }
 }

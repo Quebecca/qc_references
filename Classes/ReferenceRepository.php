@@ -30,6 +30,10 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ReferenceRepository
 {
+    const LANG_FILE = 'LLL:EXT:qc_references/Resources/Private/Language/locallang.xlf:';
+
+    const DEFAULT_ITEMS_PER_PAGE = 20;
+
     /**
      * @var BackendUserGroupRepository
      */
@@ -47,23 +51,24 @@ class ReferenceRepository
      */
     protected $modTS = [];
 
-    const DEFAULT_ITEMS_PER_PAGE = 20;
-
     /**
      * @var int
      */
     protected int $numberOfReferences = 0;
 
-    const LANG_FILE = 'LLL:EXT:qc_references/Resources/Private/Language/locallang.xlf:';
-
+    /***
+     * @note Create one single instance and create a function with dynamically params and return Obj query builder
+     */
     /**
      * @var QueryBuilder
      */
     protected QueryBuilder $pagesQueryBuilder;
+
     /**
      * @var QueryBuilder
      */
     protected QueryBuilder $ttContentQueryBuilder;
+
     /**
      * @var QueryBuilder
      */
@@ -73,6 +78,9 @@ class ReferenceRepository
     {
         $this->backendUserGroupRepository = $backendUserGroupRepository ?? GeneralUtility::makeInstance(BackendUserGroupRepository::class);
         $this->iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+        /***
+         * @note Create an function to return obj query Builder with Name of table as params
+         */
         $this->refIndexQueryBuilder = $this->getQueryBuilderForTable('sys_refindex');
         $this->ttContentQueryBuilder = $this->getQueryBuilderForTable('tt_content');
         $this->pagesQueryBuilder = $this->getQueryBuilderForTable('pages');
