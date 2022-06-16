@@ -11,10 +11,11 @@ declare(strict_types=1);
  *  (c) 2022 <techno@quebec.ca>
  *
  ***/
-namespace Qc\QcReferences;
+namespace Qc\QcReferences\Controller;
 
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\Exception;
+use Qc\QcReferences\Domain\Repository\ReferenceRepository;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -26,6 +27,8 @@ use TYPO3\CMS\Info\Controller\InfoModuleController;
 
 class ReferencesReport
 {
+    const LANG_FILE = 'LLL:EXT:qc_references/Resources/Private/Language/locallang.xlf:';
+
     /**
      * @var InfoModuleController Contains a reference to the parent calling object
      */
@@ -61,8 +64,6 @@ class ReferencesReport
      */
     private ReferenceRepository $referenceRepository;
 
-    const LANG_FILE = 'LLL:EXT:qc_references/Resources/Private/Language/locallang.xlf:';
-
     /**
      * @var int
      */
@@ -77,12 +78,6 @@ class ReferencesReport
      * @var UriBuilder|mixed|object
      */
     protected UriBuilder $uriBuilder;
-
-    public function __construct()
-    {
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->uriBuilder = $objectManager->get(UriBuilder::class);
-    }
 
     /**
      * Init, called from parent object
@@ -100,9 +95,12 @@ class ReferencesReport
 
         $this->moduleTemplate = GeneralUtility::makeInstance(ModuleTemplate::class);
         $this->view = $this->createView('InfoModule');
-        $this->pageRepository = $pageRepository ?? GeneralUtility::makeInstance(PageRepository::class);
-        $this->localizationUtility = $localizationUtility ?? GeneralUtility::makeInstance(LocalizationUtility::class);
-        $this->referenceRepository = $localizationUtility ?? GeneralUtility::makeInstance(ReferenceRepository::class);
+        $this->pageRepository =  GeneralUtility::makeInstance(PageRepository::class);
+        $this->localizationUtility = GeneralUtility::makeInstance(LocalizationUtility::class);
+        $this->referenceRepository =  GeneralUtility::makeInstance(ReferenceRepository::class);
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->uriBuilder = $objectManager->get(UriBuilder::class);
+
     }
 
     /**
@@ -124,15 +122,16 @@ class ReferencesReport
      *
      * @return string Module content
      * @throws Exception
-     * @throws DBALException
      */
     public function main(): string
     {
         $this->initialize();
-        $this->view->assign('content', $this->renderContent());
-        $this->view->assign('pageId', $this->id);
-        $this->view->assign('showHiddenOrDeletedElements', $this->showHiddenOrDeletedElements);
-        $this->view->assign('pageTitle', $this->pageRepository->getPage($this->id, true)['title']);
+        $this->view->assignMultiple([
+            'content' => $this->renderContent(),
+            'pageId' => $this->id,
+            'showHiddenOrDeletedElements' => $this->showHiddenOrDeletedElements,
+            'pageTitle' => $this->pageRepository->getPage($this->id, true)['title']
+        ]);
         return $this->view->render();
     }
 
@@ -148,7 +147,6 @@ class ReferencesReport
     /**
      * Create tabs to split the report and the checkLink functions
      * @throws Exception
-     * @throws DBALException
      */
     protected function renderContent(): string
     {
@@ -164,7 +162,6 @@ class ReferencesReport
      *
      * @return StandaloneView
      * @throws Exception
-     * @throws DBALException
      */
     protected function createViewForPageReferencesTable(): StandaloneView
     {
@@ -172,7 +169,7 @@ class ReferencesReport
         $data = [];
         // Build URi For rendering records
         foreach ($pagination['paginatedData'] as $record) {
-            $record['url'] = $this->buirUriForRow($record);
+            $record['url'] = $this->buildUriForRow($record);
             $data [] = $record;
         }
         $view = $this->createView('PageReferences');
@@ -190,9 +187,9 @@ class ReferencesReport
      * @param $line
      * @return string
      */
-    public function buirUriForRow($line): string
+    public function buildUriForRow($line): string
     {
         $key = $line['tablename'] == 'tt_content' ? 'pid' : ($line['tablename'] == 'pages' ? 'recuid' : '');
-        return $key != '' ? $this->uriBuilder->reset()->setTargetPageUid($line[$key])->buildFrontendUri() : '';
+        return $key != '' ? $this->uriBuilder->setTargetPageUid($line[$key])->buildFrontendUri() : '';
     }
 }

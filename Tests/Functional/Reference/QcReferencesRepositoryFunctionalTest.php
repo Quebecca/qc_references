@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Qc\QcReferencesTest\Tests\Functional\Reference;
 
-use Doctrine\DBAL\DBALException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
-use Qc\QcReferences\ReferenceRepository;
+use Qc\QcReferences\Domain\Repository\ReferenceRepository;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -16,7 +15,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 /**
- * @covers \Qc\QcReferences\ReferenceRepository
+ * @covers \Qc\QcReferences\Domain\Repository\ReferenceRepository
  */
 class QcReferencesRepositoryFunctionalTest extends FunctionalTestCase
 {
@@ -44,7 +43,7 @@ class QcReferencesRepositoryFunctionalTest extends FunctionalTestCase
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     * @throws DBALException|Exception
+     * @throws Exception
      */
     protected function setUp(): void
     {

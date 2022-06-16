@@ -7,9 +7,8 @@ services:
   Qc\QcReferences\:
     resource: '../Classes/*'
 
-  Qc\QcReferences\ReferenceRepository:
+  Qc\QcReferences\Domain\Repository\ReferenceRepository:
     public: true
-
 
 
 
