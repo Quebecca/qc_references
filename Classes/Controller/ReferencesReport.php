@@ -13,14 +13,12 @@ declare(strict_types=1);
  ***/
 namespace Qc\QcReferences\Controller;
 
-use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\Exception;
 use Qc\QcReferences\Domain\Repository\ReferenceRepository;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3\CMS\Info\Controller\InfoModuleController;
@@ -99,8 +97,6 @@ class ReferencesReport
         $this->pageRepository =  GeneralUtility::makeInstance(PageRepository::class);
         $this->localizationUtility = GeneralUtility::makeInstance(LocalizationUtility::class);
         $this->referenceRepository =  GeneralUtility::makeInstance(ReferenceRepository::class);
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->uriBuilder = $objectManager->get(UriBuilder::class);
 
     }
 
