@@ -75,8 +75,7 @@ class ReferencesReport
     /**
      * @var UriBuilder|mixed|object
      */
-    protected  $uriBuilder = null;
-
+    protected $uriBuilder;
 
     /**
      * Init, called from parent object
@@ -97,14 +96,14 @@ class ReferencesReport
         $this->pageRepository =  GeneralUtility::makeInstance(PageRepository::class);
         $this->localizationUtility = GeneralUtility::makeInstance(LocalizationUtility::class);
         $this->referenceRepository =  GeneralUtility::makeInstance(ReferenceRepository::class);
-
     }
 
     /**
      * Inject UriBuilder
      * @param UriBuilder $uriBuilder
      */
-    public function injectUriBuilder(UriBuilder  $uriBuilder){
+    public function injectUriBuilder(UriBuilder $uriBuilder)
+    {
         $this->uriBuilder = $uriBuilder;
     }
 

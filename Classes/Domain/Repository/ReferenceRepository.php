@@ -123,7 +123,7 @@ class ReferenceRepository
 
         if ($row['tablename'] == 'tt_content') {
             $line['pid'] = $this->getPid($row['recuid'], $row['tablename'], $this->getQueryBuilderForTable('tt_content'))['pid'];
-            $line['groupName'] = $this->getBEGroup($line['pid'],$this->getQueryBuilderForTable('pages'));
+            $line['groupName'] = $this->getBEGroup($line['pid'], $this->getQueryBuilderForTable('pages'));
         } else {
             if ($row['tablename'] == 'pages') {
                 $line['groupName'] = $this->getBEGroup($row['recuid'], $this->getQueryBuilderForTable('pages'));
