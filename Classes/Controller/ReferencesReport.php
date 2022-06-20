@@ -195,6 +195,6 @@ class ReferencesReport
     public function buildUriForRow($line): string
     {
         $key = $line['tablename'] == 'tt_content' ? 'pid' : ($line['tablename'] == 'pages' ? 'recuid' : '');
-        return $key != '' ? $this->uriBuilder->setTargetPageUid($line[$key])->buildFrontendUri() : '';
+        return $key != '' ? $this->uriBuilder->reset()->setTargetPageUid($line[$key])->buildFrontendUri() : '';
     }
 }

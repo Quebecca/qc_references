@@ -24,7 +24,6 @@ use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Pagination\ArrayPaginator;
 use TYPO3\CMS\Core\Pagination\SimplePagination;
-use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ReferenceRepository
@@ -170,6 +169,8 @@ class ReferenceRepository
 
     /**
      * This function is used to get sys_refindex records from DB
+     * @param $selectTable
+     * @param $selectUid
      * @return array
      * @throws Exception
      */
@@ -221,13 +222,13 @@ class ReferenceRepository
 
     /**
      * Generate query builders
-     * @param string $tablename
+     * @param string $tableName
      * @return QueryBuilder
      */
-    public function getQueryBuilderForTable(string $tablename): QueryBuilder
+    public function getQueryBuilderForTable(string $tableName): QueryBuilder
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
-            ->getQueryBuilderForTable($tablename);
+            ->getQueryBuilderForTable($tableName);
         $queryBuilder
             ->getRestrictions()
             ->removeAll();
