@@ -87,7 +87,7 @@ class ReferencesReport
         $this->pObj = $pObj;
 
         $this->id = (int)GeneralUtility::_GP('id');
-        $this->showHiddenOrDeletedElements = (int)GeneralUtility::_GP('showHiddenOrDeletedElements') == '1' ? 1 : 0;
+        $this->showHiddenOrDeletedElements = (int)GeneralUtility::_GP('showHiddenOrDeletedElements');
         $page = (int)GeneralUtility::_GP('paginationPage');
         $this->currentPaginationPage = $page > 0 ? $page : 1;
 
