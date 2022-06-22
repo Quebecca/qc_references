@@ -11,9 +11,8 @@ declare(strict_types=1);
  *  (c) 2022 <techno@quebec.ca>
  *
  ***/
-namespace Qc\QcReferences;
+namespace Qc\QcReferences\Domain\Repository;
 
-use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\Exception;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Beuser\Domain\Repository\BackendUserGroupRepository;
@@ -25,11 +24,13 @@ use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Pagination\ArrayPaginator;
 use TYPO3\CMS\Core\Pagination\SimplePagination;
-use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ReferenceRepository
 {
+    const LANG_FILE = 'LLL:EXT:qc_references/Resources/Private/Language/locallang.xlf:';
+    const DEFAULT_ITEMS_PER_PAGE = 20;
+
     /**
      * @var BackendUserGroupRepository
      */
@@ -47,44 +48,24 @@ class ReferenceRepository
      */
     protected $modTS = [];
 
-    const DEFAULT_ITEMS_PER_PAGE = 20;
-
     /**
      * @var int
      */
     protected int $numberOfReferences = 0;
 
-    const LANG_FILE = 'LLL:EXT:qc_references/Resources/Private/Language/locallang.xlf:';
-
-    /**
-     * @var QueryBuilder
-     */
-    protected QueryBuilder $pagesQueryBuilder;
-    /**
-     * @var QueryBuilder
-     */
-    protected QueryBuilder $ttContentQueryBuilder;
-    /**
-     * @var QueryBuilder
-     */
-    protected QueryBuilder $refIndexQueryBuilder;
-
     public function __construct()
     {
         $this->backendUserGroupRepository = $backendUserGroupRepository ?? GeneralUtility::makeInstance(BackendUserGroupRepository::class);
         $this->iconFactory = GeneralUtility::makeInstance(IconFactory::class);
-        $this->refIndexQueryBuilder = $this->getQueryBuilderForTable('sys_refindex');
-        $this->ttContentQueryBuilder = $this->getQueryBuilderForTable('tt_content');
-        $this->pagesQueryBuilder = $this->getQueryBuilderForTable('pages');
     }
 
     /**
      * Return the references records
-     *
-     * @param int|File $ref Filename or uid
+     * @param $ref
+     * @param $showHiddenOrDeletedElement
+     * @param $paginationPage
      * @return array
      * @throws Exception
-     * @throws DBALException
      */
     public function getReferences($ref, $showHiddenOrDeletedElement, $paginationPage): array
     {
@@ -141,11 +122,11 @@ class ReferenceRepository
         $line['recuid'] = $row['recuid'];
 
         if ($row['tablename'] == 'tt_content') {
-            $line['pid'] = $this->getPid($row['recuid'], $row['tablename'], $this->ttContentQueryBuilder)['pid'];
-            $line['groupName'] = $this->getBEGroup($line['pid'], $this->pagesQueryBuilder);
+            $line['pid'] = $this->getPid($row['recuid'], $row['tablename'], $this->getQueryBuilderForTable('tt_content'))['pid'];
+            $line['groupName'] = $this->getBEGroup($line['pid'], $this->getQueryBuilderForTable('pages'));
         } else {
             if ($row['tablename'] == 'pages') {
-                $line['groupName'] = $this->getBEGroup($row['recuid'], $this->pagesQueryBuilder);
+                $line['groupName'] = $this->getBEGroup($row['recuid'], $this->getQueryBuilderForTable('pages'));
             } else {
                 $line['pid'] = '-';
             }
@@ -188,23 +169,26 @@ class ReferenceRepository
 
     /**
      * This function is used to get sys_refindex records from DB
+     * @param $selectTable
+     * @param $selectUid
      * @return array
      * @throws Exception
      */
     public function getReferencesFromDB($selectTable, $selectUid): array
     {
+        $refIndexQueryBuilder = $this->getQueryBuilderForTable('sys_refindex');
         $predicates = [
-            $this->refIndexQueryBuilder->expr()->eq(
+            $refIndexQueryBuilder->expr()->eq(
                 'ref_table',
-                $this->refIndexQueryBuilder->createNamedParameter($selectTable, \PDO::PARAM_STR)
+                $refIndexQueryBuilder->createNamedParameter($selectTable, \PDO::PARAM_STR)
             ),
-            $this->refIndexQueryBuilder->expr()->eq(
+            $refIndexQueryBuilder->expr()->eq(
                 'ref_uid',
-                $this->refIndexQueryBuilder->createNamedParameter($selectUid, \PDO::PARAM_INT)
+                $refIndexQueryBuilder->createNamedParameter($selectUid, \PDO::PARAM_INT)
             )
         ];
 
-        return  $this->refIndexQueryBuilder
+        return  $refIndexQueryBuilder
             ->select('*')
             ->from('sys_refindex')
             ->where(...$predicates)
@@ -238,13 +222,13 @@ class ReferenceRepository
 
     /**
      * Generate query builders
-     * @param string $tablename
+     * @param string $tableName
      * @return QueryBuilder
      */
-    public function getQueryBuilderForTable(string $tablename): QueryBuilder
+    public function getQueryBuilderForTable(string $tableName): QueryBuilder
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
-            ->getQueryBuilderForTable($tablename);
+            ->getQueryBuilderForTable($tableName);
         $queryBuilder
             ->getRestrictions()
             ->removeAll();

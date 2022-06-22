@@ -1,13 +1,11 @@
 <?php
 
-defined('TYPO3_MODE') || die();
-
-use Qc\QcReferences\ReferencesReport;
+defined('TYPO3') || die();
 
 // Extend Module INFO with new Element
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::insertModuleFunction(
     'web_info',
-    ReferencesReport::class,
+    \Qc\QcReferences\Controller\ReferencesReport::class,
     '',
     'LLL:EXT:qc_references/Resources/Private/Language/locallang.xlf:mod_qcPageReferences'
 );
