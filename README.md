@@ -3,36 +3,40 @@ Qc References
 *La [version française](#documentation-qc-references) de la documentation suit le texte anglais*
 
 ## About
-This extension is used to display the references of a selected page as a table with the following columns:
-- Title : this column represents the page title or tt_content title that refers to the selected page.
+This extension extend the Info Module and is used to display the references of a selected page in the Pagetree, even if you don't have access to the content. It shows the following information:
 
-- Groupe BE : displays the group name of the user who created the reference.
+- BE group : Displays the group name the pointing page responsible for the reference.
 
-- Table : this column represents the type of reference for example a page content or a page.
-- UID de page : displays the UID of the reference page or the page content PID in case of the reference is a page content.
-- Slug : displays the clickable slug that can be used to redirect to the FE page of the reference.
+- Table : The table name having the link, for example tt_content or pages.
+
+- Page UID : Displays the UID of the reference page or the tt_content PID.
+
+- Slug : Clickable slug so you can check in FE the context in which the reference came from.
 
 
-Note : the table will also display the reference state in case it is disabled, expired...
+Note : The reference source state will be showned: disabled or expired if it's the case.
 
 After installing this extension, references for a selected page can be found in the Info module.
-TS Configuration
-The extension offers two types of TS configuration, which can be modified.
 
-###Select the types of references
-This option is used to define the different types of references that can be listed in the result table.
+
+## Page TSconfig
+The extension offers two parameters:
+
+### Select the tables to check for references
+
 ```php
+# Tables used to check. Default pages and tt_content
 mod.qcReferences.allowedTables = pages, tt_content
 ```
 
-###Control the result display
-This option is used to control the display of items in the table, specifying the number of items per page that will be displayed at a time.
+### Control how many items to display
 ```php
+# How many items per pages to display. Default is 100.
 mod.qcReferences.itemsPerPage = 100
 ```
 
 
-Screenshot of the references table
+### Screenshot of the references
 
 ![List of references](Documentation/Images/qc-references.png)
 
@@ -42,32 +46,34 @@ Screenshot of the references table
 # Documentation Qc References
 
 ## À propos
-Cette extension sert à afficher les références d’une page sélectionnée sous forme d’une table qui porte les colonnes suivantes : 
-- Le titre : cette colonne représente le titre de la page ou le tt_content qui fait référence au page sélectionnée.
+Cette extension ajoute une option au module Infp et sert à afficher les références d’une page sélectionnée dans l'Arborescence des pages même si vous n'avez pas accès au contenu y pointant. L'information suivante est affichée dns le module:  
 
-- Groupe BE : affiche le nom de groupe de l’utilisateur qui a créé cette référence.
+- Le titre : Titre de la page ou le contenu(tt_content) qui fait référence à la page sélectionnée.
 
-- Table : cette colonne représente le type de référence par exemple un contenu de page ou une page.
-- UID de page : Affiche le UID de la page de référence ou bien le PID de contenu de page au cas où le références est de type contenu de page.
-- Slug : affiche le slug cliquable qui peut être utilisé pour se rediriger vers la page FE de cette référence.
+- Groupe BE : Le nom du groupe responsable de la référence.
 
+- Table : La table contenant la référence, par exemple tt_content ou pages.
 
-NB : la table va aussi afficher l’état de référence au cas où il est désactivé, expiré...
+- UID de page : L'identifiant de la page de référence ou du contenu de la page contenant la référence.
 
-
-
-Après l’installation de cette extension, les références d’une page sélectionnée se trouvent dans le module Info.
-Configuration TS 
-L’extension offre deux types de configuration TS, qui peuvent être modifié. 
+- Slug : Le chemin(slug) cliquable pour permettre de visualiser la page du site dans son contexte "frontend".
 
 
-###Sélectionner les types des références 
-Cette option sert à définir les différents types de références qui peuvent être listé dans la table de résultat.
+NB : L'état désactivé ou masqué est aussi visible pour la référence.
+
+Après l’installation de cette extension, les références à la page sélectionnée sont accessibles par le sous-menu "Références à la page" du Module Info.
+
+### Configuration TS 
+L’extension offre deux options de configuration: 
+
+#### Sélectionner les types des références 
+
 ```php
+# Choix des tables à vérifier pour les références
 mod.qcReferences.allowedTables = pages, tt_content
 ```
-###Contrôler l'affichage de résultat : 
-Cette option sert à contrôler l’affichage des éléments dans la table, en spécifiant le nombre des éléments par page qui seront affiché à la fois.
+#### Contrôler l'affichage de résultat : 
 ```php
+# Quantité de lignes à afficher
 mod.qcReferences.itemsPerPage = 100
 ```
