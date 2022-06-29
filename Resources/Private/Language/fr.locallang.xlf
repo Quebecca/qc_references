@@ -5,7 +5,7 @@
 		<body>
             <trans-unit id="mod_qcPageReferences" >
                 <source>Page References</source>
-                <target>Les références à la page</target>
+                <target>Références à la page</target>
             </trans-unit>
             <trans-unit id="defaultTitle">
                 <source>Qc page references Module</source>
