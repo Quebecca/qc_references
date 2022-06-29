@@ -1,0 +1,10 @@
+/.Build/
+/.idea/
+/.php_cs.cache
+/.php-cs-fixer.cache
+/Build/testing-docker/.env
+/Build/yarn/node_modules
+/composer.lock
+/Documentation-GENERATED-temp
+/Tests/Unit/.phpunit.result.cache
+/yarn.lock
