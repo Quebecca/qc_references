@@ -1,6 +1,6 @@
 {
     "name": "qc/qc-references",
-    "description": "Module sert à afficher les références à une page sélectionnée",
+    "description": "This module shows the references to the selected pages in the Pagetree, even if you don't have access to the content linking to it.",
     "license": "GPL-2.0-or-later",
     "type": "typo3-cms-extension",
     "require": {
