@@ -10,11 +10,11 @@
  ***************************************************************/
 
 $EM_CONF[$_EXTKEY] = [
-    'title' => 'qc_references',
+    'title' => 'Qc references',
     'description' => "This module shows the references to the selected pages in the Pagetree, even if you don't have access to the content linking to it.",
     'category' => 'Module',
     'state' => 'beta',
-    'version' => '1.0.0',
+    'version' => '1.0.1',
     'autoload' => [
         'psr-4' => [
             'Qc\\QcReferences\\' => 'Classes',
