@@ -46,7 +46,7 @@ mod.qcReferences.itemsPerPage = 100
 # Documentation Qc References
 
 ## À propos
-Cette extension ajoute une option au module Infp et sert à afficher les références d’une page sélectionnée dans l'Arborescence des pages même si vous n'avez pas accès au contenu y pointant. L'information suivante est affichée dns le module:  
+Cette extension ajoute une option au module Info et sert à afficher les références d’une page sélectionnée dans l'Arborescence des pages même si vous n'avez pas accès au contenu y pointant. L'information suivante est affichée dans le module:  
 
 - Le titre : Titre de la page ou le contenu(tt_content) qui fait référence à la page sélectionnée.
 
