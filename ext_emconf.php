@@ -10,8 +10,9 @@
  ***************************************************************/
 
 $EM_CONF[$_EXTKEY] = [
-    'title' => 'Qc references',
+    'title' => 'Qc References',
     'description' => "This module shows the references to the selected pages in the Pagetree, even if you don't have access to the content linking to it.",
+    'author' => 'Quebec.ca',
     'category' => 'Module',
     'state' => 'beta',
     'version' => '1.0.1',
