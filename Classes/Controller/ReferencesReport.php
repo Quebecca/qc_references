@@ -25,7 +25,7 @@ use TYPO3\CMS\Info\Controller\InfoModuleController;
 
 class ReferencesReport
 {
-    const LANG_FILE = 'LLL:EXT:qc_references/Resources/Private/Language/locallang.xlf:';
+    final public const LANG_FILE = 'LLL:EXT:qc_references/Resources/Private/Language/locallang.xlf:';
 
     /**
      * @var InfoModuleController Contains a reference to the parent calling object
@@ -100,7 +100,6 @@ class ReferencesReport
 
     /**
      * Inject UriBuilder
-     * @param UriBuilder $uriBuilder
      */
     public function injectUriBuilder(UriBuilder $uriBuilder)
     {
@@ -108,7 +107,6 @@ class ReferencesReport
     }
 
     /**
-     * @param string $templateName
      * @return StandaloneView
      */
     protected function createView(string $templateName): StandaloneView

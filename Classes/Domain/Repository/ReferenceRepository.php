@@ -28,13 +28,13 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ReferenceRepository
 {
-    const LANG_FILE = 'LLL:EXT:qc_references/Resources/Private/Language/locallang.xlf:';
-    const DEFAULT_ITEMS_PER_PAGE = 20;
+    final public const LANG_FILE = 'LLL:EXT:qc_references/Resources/Private/Language/locallang.xlf:';
+    final public const DEFAULT_ITEMS_PER_PAGE = 20;
 
     /**
      * @var BackendUserGroupRepository
      */
-    private BackendUserGroupRepository $backendUserGroupRepository;
+    private readonly BackendUserGroupRepository $backendUserGroupRepository;
 
     /**
      * @var IconFactory
@@ -70,14 +70,12 @@ class ReferenceRepository
     public function getReferences($ref, $showHiddenOrDeletedElement, $paginationPage): array
     {
         $this->modTS = BackendUtility::getPagesTSconfig($ref)['mod.']['qcReferences.'];
-        $tsTables = explode(',', $this->modTS['allowedTables']);
+        $tsTables = explode(',', (string) $this->modTS['allowedTables']);
         $tsItemsPerPage = (int)$this->modTS['itemsPerPage'];
         $itemsPerPage = $tsItemsPerPage > 0 ?  $tsItemsPerPage : self::DEFAULT_ITEMS_PER_PAGE;
 
         // Get the allowed tables for elements that refers to the selected page
-        $alowedTables = array_map(function ($item) {
-            return str_replace(' ', '', $item);
-        }, $tsTables);
+        $alowedTables = array_map(fn($item) => str_replace(' ', '', (string) $item), $tsTables);
 
         $refLines = [];
         $rows = $this->getReferencesFromDB('pages', $ref);
@@ -222,7 +220,6 @@ class ReferenceRepository
 
     /**
      * Generate query builders
-     * @param string $tableName
      * @return QueryBuilder
      */
     public function getQueryBuilderForTable(string $tableName): QueryBuilder
@@ -296,8 +293,6 @@ class ReferenceRepository
     /**
      * This function is used to get the pagination items
      * @param $data
-     * @param int $currentPage
-     * @param int $itemsPerPage
      * @return array
      */
     public function getPagination($data, int $currentPage, int $itemsPerPage): array
