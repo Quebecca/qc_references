@@ -191,9 +191,7 @@ class ReferenceRepository
         return  $refIndexQueryBuilder
             ->select('*')
             ->from('sys_refindex')
-            ->where(...$predicates)
-            ->orderBy('tablename', 'DESC')
-            ->execute()
+            ->where(...$predicates)->orderBy('tablename', 'DESC')->executeQuery()
             ->fetchAllAssociative();
     }
 
@@ -284,9 +282,7 @@ class ReferenceRepository
 
             $result =  $queryBuilder
                 ->select('hidden', 'deleted')
-                ->from($tableName)
-                ->where(...$predicates)
-                ->execute()
+                ->from($tableName)->where(...$predicates)->executeQuery()
                 ->fetchAssociative();
             return $result['deleted'] == 1 || $result['hidden'] == 1;
         }

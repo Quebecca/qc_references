@@ -13,6 +13,7 @@ declare(strict_types=1);
  ***/
 namespace Qc\QcReferences\Controller;
 
+use TYPO3\CMS\Core\Page\PageRenderer;
 use Doctrine\DBAL\Driver\Exception;
 use Qc\QcReferences\Domain\Repository\ReferenceRepository;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
@@ -76,6 +77,9 @@ class ReferencesReport
      * @var UriBuilder|mixed|object
      */
     protected $uriBuilder;
+    public function __construct(private PageRenderer $pageRenderer)
+    {
+    }
 
     /**
      * Init, called from parent object
@@ -144,7 +148,7 @@ class ReferencesReport
      */
     protected function initialize()
     {
-        $pageRenderer = $this->moduleTemplate->getPageRenderer();
+        $pageRenderer = $this->pageRenderer;
         $pageRenderer->addCssFile('EXT:qc_references/Resources/Public/Css/qcReferences.css', 'stylesheet', 'all');
     }
 
