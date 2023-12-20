@@ -1,0 +1,23 @@
+<div id="qcReferences-modfuncreport">
+    <f:if condition="{pageTitle}">
+        <h2>{pageTitle}</h2>
+        <br>
+    </f:if>
+     <div class="mb-10">
+         <div class="form-group mb-10">
+             <label for="showHiddenOrDeletedElements">
+                 <f:translate key="LLL:EXT:qc_references/Resources/Private/Language/locallang.xlf:hideDisableOrDeletedElements"/>
+             </label>
+             <f:form.checkbox name="showHiddenOrDeletedElements" id="showHiddenOrDeletedElements" value="1"
+                              checked="{f:if(condition: showHiddenOrDeletedElements, then: 'true', else: 'false')}"/>
+             <f:form.hidden name="id" value="{pageId}" />
+         </div>
+         <div class="form-group w-100">
+             <input type="submit" class="btn btn-default t3js-update-button"
+                    value="{f:translate(key: 'LLL:EXT:beuser/Resources/Private/Language/locallang.xlf:filter')}"/>
+         </div>
+     </div>
+     <br><br>
+
+     {content -> f:format.raw()}
+ </div>

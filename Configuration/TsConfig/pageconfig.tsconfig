@@ -1,3 +1,5 @@
+templates.typo3/cms-info.1643293191 = qc/qc-references:Resources/Private/Template
+templates.typo3/cms-info.1643238991 = qc/qc-references:Resources/Private/Partials
 mod{
   qcReferences  {
     allowedTables  = pages, tt_content

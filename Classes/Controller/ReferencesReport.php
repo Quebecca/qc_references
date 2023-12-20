@@ -13,12 +13,17 @@ declare(strict_types=1);
  ***/
 namespace Qc\QcReferences\Controller;
 
+use _PHPStan_4d77e98e1\RingCentral\Psr7\ServerRequest;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use Doctrine\DBAL\Driver\Exception;
 use Qc\QcReferences\Domain\Repository\ReferenceRepository;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Http\ForwardResponse;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
@@ -49,21 +54,6 @@ class ReferencesReport
     private StandaloneView $view;
 
     /**
-     * @var PageRepository
-     */
-    private PageRepository $pageRepository;
-
-    /**
-     * @var LocalizationUtility
-     */
-    private LocalizationUtility $localizationUtility;
-
-    /**
-     * @var ReferenceRepository
-     */
-    private ReferenceRepository $referenceRepository;
-
-    /**
      * @var int
      */
     private int $currentPaginationPage = 1;
@@ -77,7 +67,14 @@ class ReferencesReport
      * @var UriBuilder|mixed|object
      */
     protected $uriBuilder;
-    public function __construct(private PageRenderer $pageRenderer)
+
+
+    public function __construct(
+        private PageRenderer $pageRenderer,
+        private ReferenceRepository $referenceRepository,
+        private LocalizationUtility $localizationUtility,
+        private PageRepository $pageRepository
+    )
     {
     }
 
@@ -86,7 +83,7 @@ class ReferencesReport
      *
      * @param InfoModuleController $pObj A reference to the parent (calling) object
      */
-    public function init($pObj)
+   /* public function init($pObj)
     {
         $this->pObj = $pObj;
 
@@ -100,7 +97,7 @@ class ReferencesReport
         $this->pageRepository =  GeneralUtility::makeInstance(PageRepository::class);
         $this->localizationUtility = GeneralUtility::makeInstance(LocalizationUtility::class);
         $this->referenceRepository =  GeneralUtility::makeInstance(ReferenceRepository::class);
-    }
+    }*/
 
     /**
      * Inject UriBuilder
@@ -115,7 +112,7 @@ class ReferencesReport
      * @param string $templateName
      * @return StandaloneView
      */
-    protected function createView(string $templateName): StandaloneView
+ /*   protected function createView(string $templateName): StandaloneView
     {
         $view = GeneralUtility::makeInstance(StandaloneView::class);
         $view->setPartialRootPaths(['EXT:qc_references/Resources/Private/Partials']);
@@ -123,7 +120,7 @@ class ReferencesReport
         $view->setTemplateRootPaths(['EXT:qc_references/Resources/Private/Templates/Backend']);
         $view->setTemplate($templateName);
         return $view;
-    }
+    }*/
 
     /**
      * Main, called from parent object
@@ -131,7 +128,7 @@ class ReferencesReport
      * @return string Module content
      * @throws Exception
      */
-    public function main(): string
+/*    public function main(): string
     {
         $this->initialize();
         $this->view->assignMultiple([
@@ -141,7 +138,7 @@ class ReferencesReport
             'pageTitle' => $this->pageRepository->getPage($this->id, true)['title']
         ]);
         return $this->view->render();
-    }
+    }*/
 
     /**
      * Initializes the Module
@@ -160,9 +157,16 @@ class ReferencesReport
     {
         $menuItems[] = [
             'label' => $this->localizationUtility->translate(self::LANG_FILE . 'mod_qcPageReferences'),
-            'content' => $this->createViewForPageReferencesTable()->render()
+//            'content' => $this->createViewForPageReferencesTableAction()->render()
         ];
         return $this->moduleTemplate->getDynamicTabMenu($menuItems, 'report-qcreferences');
+    }
+
+
+    public function filterReferencesAction(ServerRequestInterface $request): ResponseInterface {
+        $this->id = intval($request->getParsedBody()['id']);
+        $this->showHiddenOrDeletedElements = intval($request->getParsedBody()['showHiddenOrDeletedElements']?? 0);
+        return new ForwardResponse('createViewForPageReferencesTableAction');
     }
 
     /**
@@ -171,8 +175,14 @@ class ReferencesReport
      * @return StandaloneView
      * @throws Exception
      */
-    protected function createViewForPageReferencesTable(): StandaloneView
+    public function createViewForPageReferencesTableAction(ServerRequestInterface $request): ResponseInterface
     {
+        $page = (int)GeneralUtility::_GP('paginationPage');
+        $this->currentPaginationPage = $page > 0 ? $page : 1;
+        $this->id = (int)GeneralUtility::_GP('id');
+        $moduleTemplateFactory = GeneralUtility::makeInstance(ModuleTemplateFactory::class);
+        $moduleTemplate = $moduleTemplateFactory->create($request);
+        $moduleTemplate->makeDocHeaderModuleMenu(['id' => $this->id]);
         $pagination = $this->referenceRepository->getReferences($this->id, $this->showHiddenOrDeletedElements, $this->currentPaginationPage);
         $data = [];
         // Build URi For rendering records
@@ -180,15 +190,18 @@ class ReferencesReport
             $record['url'] = $this->buildUriForRow($record);
             $data [] = $record;
         }
-        $view = $this->createView('PageReferences');
-        $view->assignMultiple([
+        //$view = $this->createView('PageReferences');
+        $moduleTemplate->assignMultiple([
             'numberOfReferences' => $this->referenceRepository->getNumberOfReferences(),
             'showHiddenOrDeletedElements' => $this->showHiddenOrDeletedElements,
             'currentPage' => $this->id,
             'references' => $data,
             'pagination' => $pagination['pagination'],
+           // 'content' => $this->renderContent(),
+            'pageId' => $this->id,
+            'pageTitle' => $this->pageRepository->getPage($this->id, true)['title']
         ]);
-        return $view;
+        return $moduleTemplate->renderResponse('PageReferences');
     }
 
     /**
