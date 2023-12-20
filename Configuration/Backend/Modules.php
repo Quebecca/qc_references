@@ -13,7 +13,7 @@ return [
         'extensionName' => 'QcReferences',
         'routes' => [
             '_default' => [
-                'target' => ReferencesReport::class . '::createViewForPageReferencesTableAction',
+                'target' => ReferencesReport::class . '::getReferencesAction',
             ],
         ],
     ],

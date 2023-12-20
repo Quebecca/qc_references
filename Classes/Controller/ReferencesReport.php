@@ -19,31 +19,16 @@ use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use Doctrine\DBAL\Driver\Exception;
 use Qc\QcReferences\Domain\Repository\ReferenceRepository;
-use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
-use TYPO3\CMS\Fluid\View\StandaloneView;
-use TYPO3\CMS\Info\Controller\InfoModuleController;
 
 class ReferencesReport
 {
-    const LANG_FILE = 'LLL:EXT:qc_references/Resources/Private/Language/locallang.xlf:';
-
     /**
      * @var int
      */
     private int $id = 0;
-
-    /**
-     * @var ModuleTemplate
-     */
-    private ModuleTemplate $moduleTemplate;
-
-    /**
-     * @var StandaloneView
-     */
-    private StandaloneView $view;
 
     /**
      * @var int
@@ -55,31 +40,28 @@ class ReferencesReport
      */
     private int $showHiddenOrDeletedElements = 0;
 
-
     public function __construct(
         private PageRenderer $pageRenderer,
         private ReferenceRepository $referenceRepository,
         private PageRepository $pageRepository,
-        private UriBuilder $uriBuilder
-    )
-    {}
-    
+        private UriBuilder $uriBuilder,
+        private ModuleTemplateFactory $moduleTemplateFactory
+    ){}
+
     /**
-     * Displays the View for the Backend User List
      *
-     * @return StandaloneView
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
      * @throws Exception
      */
-    public function createViewForPageReferencesTableAction(ServerRequestInterface $request): ResponseInterface
+    public function getReferencesAction(ServerRequestInterface $request): ResponseInterface
     {
         $this->pageRenderer->addCssFile('EXT:qc_references/Resources/Public/Css/qcReferences.css', 'stylesheet', 'all');
-        $this->id = intval($request->getParsedBody()['id']);
         $this->showHiddenOrDeletedElements = intval($request->getParsedBody()['showHiddenOrDeletedElements']?? 0);
         $page = (int)GeneralUtility::_GP('paginationPage');
         $this->currentPaginationPage = $page > 0 ? $page : 1;
         $this->id = (int)GeneralUtility::_GP('id');
-        $moduleTemplateFactory = GeneralUtility::makeInstance(ModuleTemplateFactory::class);
-        $moduleTemplate = $moduleTemplateFactory->create($request);
+        $moduleTemplate = $this->moduleTemplateFactory->create($request);
         $moduleTemplate->makeDocHeaderModuleMenu(['id' => $this->id]);
         $pagination = $this->referenceRepository->getReferences($this->id, $this->showHiddenOrDeletedElements, $this->currentPaginationPage);
         $data = [];

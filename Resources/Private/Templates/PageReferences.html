@@ -10,10 +10,10 @@
         <div class="mb-10">
             <form  method="post">
                 <div class="form-group mb-10">
-                    <label for="showHiddenOrDeletedElements">
+                    <label for="showHiddenOrDeletedElements" id="ShowDeletedOrHiddenItems">
                         <f:translate key="LLL:EXT:qc_references/Resources/Private/Language/locallang.xlf:hideDisableOrDeletedElements"/>
                     </label>
-                    <input type="checkbox" name="showHiddenOrDeletedElements" id="showHiddenOrDeletedElements" value="1"
+                    <input type="checkbox" name="showHiddenOrDeletedElements" class="form-input" id="showHiddenOrDeletedElements" value="1"
                            {f:if(condition:'{showHiddenOrDeletedElements} == \'1\'', then: 'checked', else: '')}/>
                     <input type="hidden" name="id" value="{pageId}" />
                 </div>

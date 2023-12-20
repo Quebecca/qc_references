@@ -14,4 +14,8 @@
   margin-right: 2rem;
   margin-top: 10rem;
   text-align: center;
-  background-color: #f2f1f1; }
+  background-color: #f2f1f1 !important; }
+
+#ShowDeletedOrHiddenItems {
+    font-weight : 600;
+}
