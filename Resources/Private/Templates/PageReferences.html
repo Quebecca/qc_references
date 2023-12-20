@@ -8,13 +8,13 @@
             <br>
         </f:if>
         <div class="mb-10">
-            <form action="{be:moduleLink(route:'filter_references')}" method="post">
+            <form  method="post">
                 <div class="form-group mb-10">
                     <label for="showHiddenOrDeletedElements">
                         <f:translate key="LLL:EXT:qc_references/Resources/Private/Language/locallang.xlf:hideDisableOrDeletedElements"/>
                     </label>
                     <input type="checkbox" name="showHiddenOrDeletedElements" id="showHiddenOrDeletedElements" value="1"
-                           checked="{f:if(condition: showHiddenOrDeletedElements, then: 'true', else: 'false')}"/>
+                           {f:if(condition:'{showHiddenOrDeletedElements} == \'1\'', then: 'checked', else: '')}/>
                     <input type="hidden" name="id" value="{pageId}" />
                 </div>
                 <div class="form-group w-100">

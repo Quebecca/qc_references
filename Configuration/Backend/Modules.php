@@ -8,7 +8,7 @@ return [
         //'position' => ['after' => 'web_info'],
         'access' => 'user,group',
         'icon' => '',
-        'path' => '/module/web/QcReferences',
+        'path' => '/module/web/info/QcReferences',
         'labels' => 'LLL:EXT:qc_references/Resources/Private/Language/locallang.xlf:mod_qcPageReferences',
         'extensionName' => 'QcReferences',
         'routes' => [

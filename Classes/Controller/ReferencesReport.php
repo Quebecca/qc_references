@@ -17,6 +17,7 @@ use _PHPStan_4d77e98e1\RingCentral\Psr7\ServerRequest;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
+use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use Doctrine\DBAL\Driver\Exception;
 use Qc\QcReferences\Domain\Repository\ReferenceRepository;
@@ -149,25 +150,7 @@ class ReferencesReport
         $pageRenderer->addCssFile('EXT:qc_references/Resources/Public/Css/qcReferences.css', 'stylesheet', 'all');
     }
 
-    /**
-     * Create tabs to split the report and the checkLink functions
-     * @throws Exception
-     */
-    protected function renderContent(): string
-    {
-        $menuItems[] = [
-            'label' => $this->localizationUtility->translate(self::LANG_FILE . 'mod_qcPageReferences'),
-//            'content' => $this->createViewForPageReferencesTableAction()->render()
-        ];
-        return $this->moduleTemplate->getDynamicTabMenu($menuItems, 'report-qcreferences');
-    }
 
-
-    public function filterReferencesAction(ServerRequestInterface $request): ResponseInterface {
-        $this->id = intval($request->getParsedBody()['id']);
-        $this->showHiddenOrDeletedElements = intval($request->getParsedBody()['showHiddenOrDeletedElements']?? 0);
-        return new ForwardResponse('createViewForPageReferencesTableAction');
-    }
 
     /**
      * Displays the View for the Backend User List
@@ -177,6 +160,8 @@ class ReferencesReport
      */
     public function createViewForPageReferencesTableAction(ServerRequestInterface $request): ResponseInterface
     {
+        $this->id = intval($request->getParsedBody()['id']);
+        $this->showHiddenOrDeletedElements = intval($request->getParsedBody()['showHiddenOrDeletedElements']?? 0);
         $page = (int)GeneralUtility::_GP('paginationPage');
         $this->currentPaginationPage = $page > 0 ? $page : 1;
         $this->id = (int)GeneralUtility::_GP('id');
@@ -190,14 +175,12 @@ class ReferencesReport
             $record['url'] = $this->buildUriForRow($record);
             $data [] = $record;
         }
-        //$view = $this->createView('PageReferences');
         $moduleTemplate->assignMultiple([
             'numberOfReferences' => $this->referenceRepository->getNumberOfReferences(),
             'showHiddenOrDeletedElements' => $this->showHiddenOrDeletedElements,
             'currentPage' => $this->id,
             'references' => $data,
             'pagination' => $pagination['pagination'],
-           // 'content' => $this->renderContent(),
             'pageId' => $this->id,
             'pageTitle' => $this->pageRepository->getPage($this->id, true)['title']
         ]);
