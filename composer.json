@@ -43,6 +43,5 @@
             "extension-key": "qc_references",
             "web-dir": ".Build/Web"
         }
-    },
-	"version": "12.4.9"
+    }
 }
