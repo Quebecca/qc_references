@@ -4,6 +4,7 @@
     "license": "GPL-2.0-or-later",
     "type": "typo3-cms-extension",
     "require": {
+	"php": "^8.2",
         "typo3/cms-backend": "^12",
         "typo3/cms-beuser": "^12",
         "typo3/cms-core": "^12"
@@ -28,7 +29,6 @@
         }
     },
     "require-dev": {
-        "php": "^8.2",
         "friendsofphp/php-cs-fixer": "^2.18.6",
         "phpunit/phpunit": "^8.5.21",
         "typo3/testing-framework": "^6.14.0"
