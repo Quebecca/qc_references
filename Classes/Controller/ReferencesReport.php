@@ -77,7 +77,7 @@ class ReferencesReport
             'references' => $data,
             'pagination' => $pagination['pagination'],
             'pageId' => $this->id,
-            'pageTitle' => $this->pageRepository->getPage($this->id, true)['title']
+            'pageTitle' => $this->pageRepository->getPage($this->id, true)['title'] ?? ''
         ]);
         return $moduleTemplate->renderResponse('PageReferences');
     }
