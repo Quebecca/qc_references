@@ -110,9 +110,12 @@ class ReferenceRepository
 
         $line['deleted'] = $record['deleted'];
         $line['elementDescription'] = 'uid : ' . $record['uid'];
-        $status = $record['deleted'] ? 'deleted' :  ($record['hidden'] ? 'hidden' : '');
+        $status = $record['deleted'] ? 'deleted' :  ($record['hidden'] ?? false ? 'hidden' : '');
         $line['elementDescription'] .= ' ' . $this->getItemStatus($record['starttime'], $record['endtime'])['statusMessage'];
         $line['elementDescription'] .= $status != '' ? ' - ' . $status : '';
+        if($record['t3ver_state'] ?? false) {
+            $record['t3ver_state'] = $record['t3ver_state'] !== -1 ? $record['t3ver_state'] : 1;
+        }
         $line['icon'] = $this->iconFactory->getIconForRecord($row['tablename'], $record, Icon::SIZE_SMALL)->render();
         $line['row'] = $row;
         $line['record'] = $record;
