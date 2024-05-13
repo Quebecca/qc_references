@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        php: ['7.4' ]
+        php: ['8.2' ]
         minMax: ['composerInstallMax' ]
     steps:
       - name: Checkout
