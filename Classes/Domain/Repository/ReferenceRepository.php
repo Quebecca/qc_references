@@ -251,14 +251,13 @@ class ReferenceRepository
                     $queryBuilder->createNamedParameter($pid, \PDO::PARAM_INT)
                 ),
             ];
-
             $res =  $queryBuilder
                 ->select('perms_groupid')
                 ->from('pages')
                 ->where(...$predicates)
                 ->execute()
                 ->fetchOne();
-            if ($res != null) {
+            if ($res != null && $this->backendUserGroupRepository->findByUid($res) != null) {
                 return $this->backendUserGroupRepository->findByUid($res)->getTitle();
             }
             return '';
