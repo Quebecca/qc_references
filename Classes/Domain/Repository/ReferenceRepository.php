@@ -8,7 +8,7 @@ declare(strict_types=1);
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
  *
- *  (c) 2022 <techno@quebec.ca>
+ *  (c) 2026 <techno@quebec.ca>
  *
  ***/
 namespace Qc\QcReferences\Domain\Repository;
@@ -25,6 +25,7 @@ use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Pagination\ArrayPaginator;
 use TYPO3\CMS\Core\Pagination\SimplePagination;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Database\Connection;
 
 class ReferenceRepository
 {
@@ -183,11 +184,11 @@ class ReferenceRepository
         $predicates = [
             $refIndexQueryBuilder->expr()->eq(
                 'ref_table',
-                $refIndexQueryBuilder->createNamedParameter($selectTable, \PDO::PARAM_STR)
+                $refIndexQueryBuilder->createNamedParameter($selectTable, Connection::PARAM_STR)
             ),
             $refIndexQueryBuilder->expr()->eq(
                 'ref_uid',
-                $refIndexQueryBuilder->createNamedParameter($selectUid, \PDO::PARAM_INT)
+                $refIndexQueryBuilder->createNamedParameter($selectUid, Connection::PARAM_INT)
             )
         ];
 
@@ -210,14 +211,14 @@ class ReferenceRepository
         $predicates = [
             $queryBuilder->expr()->eq(
                 'uid',
-                $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT)
+                $queryBuilder->createNamedParameter($uid, Connection::PARAM_INT)
             ),
         ];
         return   $queryBuilder
             ->select('pid')
             ->from($tablename)
             ->where(...$predicates)
-            ->execute()
+            ->executeQuery()
             ->fetchAssociative();
     }
 
@@ -248,14 +249,14 @@ class ReferenceRepository
             $predicates = [
                 $queryBuilder->expr()->eq(
                     'uid',
-                    $queryBuilder->createNamedParameter($pid, \PDO::PARAM_INT)
+                    $queryBuilder->createNamedParameter($pid, Connection::PARAM_INT)
                 ),
             ];
             $res =  $queryBuilder
                 ->select('perms_groupid')
                 ->from('pages')
                 ->where(...$predicates)
-                ->execute()
+                ->executeQuery()
                 ->fetchOne();
             if ($res != null && $this->backendUserGroupRepository->findByUid($res) != null) {
                 return $this->backendUserGroupRepository->findByUid($res)->getTitle();
@@ -278,7 +279,7 @@ class ReferenceRepository
             $predicates = [
                 $queryBuilder->expr()->eq(
                     'uid',
-                    $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT)
+                    $queryBuilder->createNamedParameter($uid, Connection::PARAM_INT)
                 ),
             ];
 
