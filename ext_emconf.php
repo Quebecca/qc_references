@@ -15,7 +15,7 @@ $EM_CONF[$_EXTKEY] = [
     'author' => 'Quebec.ca',
     'category' => 'Module',
     'state' => 'stable',
-    'version' => '2.0.1',
+    'version' => '2.1.0',
     'autoload' => [
         'psr-4' => [
             'Qc\\QcReferences\\' => 'Classes',
@@ -23,7 +23,7 @@ $EM_CONF[$_EXTKEY] = [
     ],
     'constraints' => [
         'depends' => [
-            'typo3' => '12.4.0-12.9.99',
+            'typo3' => '12.4.0-13.4.99',
         ],
         'conflicts' => [],
         'suggests' => [],
