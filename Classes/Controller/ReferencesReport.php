@@ -61,10 +61,10 @@ class ReferencesReport
         $this->uriBuilder->setRequest($this->getExtbaseRequest());
         $this->showHiddenOrDeletedElements = intval($request->getParsedBody()['showHiddenOrDeletedElements'] ?? 0);
 
-        $page = (int)$request->getParsedBody()['paginationPage'] ?? $request->getQueryParams()['paginationPage'] ?? 0;
+        $page = (int) ($request->getParsedBody()['paginationPage'] ?? $request->getQueryParams()['paginationPage'] ?? 0);
 
         $this->currentPaginationPage = $page > 0 ? $page : 1;
-        $this->id = (int)$value = $request->getParsedBody()['id'] ?? $request->getQueryParams()['id'] ?? 0;
+        $this->id = (int) ($request->getParsedBody()['id'] ?? $request->getQueryParams()['id'] ?? 0);
 
         $moduleTemplate = $this->moduleTemplateFactory->create($request);
         $moduleTemplate->makeDocHeaderModuleMenu(['id' => $this->id]);
